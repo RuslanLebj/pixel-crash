@@ -11,9 +11,11 @@
 
 ## Файлы и проверки
 
-- Редактируйте `dist/index.html`, `dist/game.js` и `dist/music.js`.
-- После изменений соберите автономную версию: `python3 scripts/build-standalone.py`.
-- Проверяйте игровую логику: `node tests/game.test.cjs`; обработку ввода: `node tests/input.test.cjs`; музыку: `node tests/music.test.cjs`; выход из заноса: `node tests/drift.test.cjs`; выбор машин и гараж: `node tests/fleet.test.cjs`; масштабирование полного экрана: `node tests/fullscreen.test.cjs`; карты, камера и город: `node tests/maps.test.cjs`.
+- Редактируйте исходники в `src/`: карты — `src/maps/`, машины — `src/vehicles/`, физика и мир — `src/engine/`, интерфейс — `src/ui/`, звук — `src/audio/`, разметка и стили — `src/index.html` и `src/styles.css`.
+- `src/game-sources.json` задаёт порядок объединения частей игры в общую замкнутую область видимости. Сохраняйте порядок инициализации.
+- `dist/` и корневой `index.html` генерируются сборщиком; не редактируйте их вручную.
+- После изменений соберите автономную версию: `python3 scripts/build-standalone.py`. Актуальность всех результатов сборки проверяется без записи командой `python3 scripts/build-standalone.py --check`.
+- Проверяйте игровую логику: `node tests/game.test.cjs`; обработку ввода: `node tests/input.test.cjs`; музыку: `node tests/music.test.cjs`; выход из заноса: `node tests/drift.test.cjs`; выбор машин и гараж: `node tests/fleet.test.cjs`; масштабирование полного экрана: `node tests/fullscreen.test.cjs`; карты, камера и город: `node tests/maps.test.cjs`; сборку и автономность HTML: `node tests/build.test.cjs`.
 - Рабочая копия проекта: `/home/f/PycharmProjects/FUN/pixel-crash`.
 
 ## Известные проблемы
