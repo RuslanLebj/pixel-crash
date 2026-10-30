@@ -13,7 +13,7 @@
 
 - Редактируйте `dist/index.html`, `dist/game.js` и `dist/music.js`.
 - После изменений соберите автономную версию: `python3 scripts/build-standalone.py`.
-- Проверяйте игровую логику: `node tests/game.test.cjs`; обработку ввода: `node tests/input.test.cjs`; музыку: `node tests/music.test.cjs`; выход из заноса: `node tests/drift.test.cjs`; выбор машин и гараж: `node tests/fleet.test.cjs`; масштабирование полного экрана: `node tests/fullscreen.test.cjs`.
+- Проверяйте игровую логику: `node tests/game.test.cjs`; обработку ввода: `node tests/input.test.cjs`; музыку: `node tests/music.test.cjs`; выход из заноса: `node tests/drift.test.cjs`; выбор машин и гараж: `node tests/fleet.test.cjs`; масштабирование полного экрана: `node tests/fullscreen.test.cjs`; карты, камера и город: `node tests/maps.test.cjs`.
 - Рабочая копия проекта: `/home/f/PycharmProjects/FUN/pixel-crash`.
 
 ## Известные проблемы

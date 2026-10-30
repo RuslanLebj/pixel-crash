@@ -86,16 +86,30 @@ canvas.speed-dial{display:block;width:100%;height:auto;max-width:none;aspect-rat
 .cabinet-number{position:absolute;right:28px;bottom:26px;color:#5d654e;font:9px monospace;letter-spacing:3px;border-top:2px solid #5e5e3c;padding-top:7px}
 @media(max-width:900px){.cabinet-stamp,.cabinet-number{display:none}.cabinet-rail.left{left:18px}.cabinet-rail.right{right:18px}}
 @media(max-width:600px){.cabinet-rail{display:none}.game:fullscreen::before{inset:4px}}
+/* Choose a compact arena or a scrolling city; both remain available offline. */
+.route-strip{display:flex;align-items:center;gap:15px;padding:13px 16px;margin:0 0 12px;background:#20281e;border:1px solid #4b5941;box-shadow:inset 3px 0 #879b5f}
+.route-strip canvas{width:88px;height:44px;flex-shrink:0;border:1px solid #4e5c40}
+.route-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}.route-copy small{font:8px monospace;letter-spacing:2px;color:#a2b77c}.route-copy strong{font-size:14px;color:#eee9cf}.route-copy span{font:10px monospace;color:#939f83}
+.map-label{min-width:0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.tools{flex-shrink:0}.mode-switch button:disabled{opacity:.35;cursor:default;filter:none}
+.map-dialog{width:min(760px,calc(100vw - 28px))}.map-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px}
+.map-card{padding:10px;border:1px solid #48563e;background:#232d20;text-align:left;color:#eee9d1;display:flex;flex-direction:column;gap:9px;position:relative}
+.map-card[aria-pressed="true"]{border-color:#c6df78;box-shadow:inset 0 0 0 1px #c6df78}
+.map-card canvas{width:100%;height:auto;aspect-ratio:2/1;image-rendering:pixelated;border:1px solid #43563b}.map-card strong{font-size:18px}.map-card p{font-size:11px;line-height:1.7;color:#aeb99b;margin:0;min-height:54px}.map-card small{font:9px monospace;color:#c6df78;letter-spacing:1px}.map-card .map-status{font:9px monospace;color:#e2be82;border-top:1px solid #435139;padding-top:10px;margin-top:auto}
+.city-navigation{position:absolute;top:11px;right:11px;width:156px;border:1px solid #87936c;background:#15251ce8;padding:5px;box-shadow:3px 3px #0c170ca0;color:#d7dcab;pointer-events:auto}
+.city-navigation[hidden],.city-navigation canvas[hidden]{display:none}.city-navigation canvas{width:144px;height:108px;touch-action:auto}.city-navigation header{padding:0 0 4px;border:0;font:8px monospace;letter-spacing:1px;gap:7px}.city-navigation button{border:1px solid #566748;background:#263722;color:#d1e39b;font:12px monospace;line-height:13px;width:18px;height:17px;padding:0}.city-navigation>span{display:block;margin-top:5px;font:7px monospace;letter-spacing:.4px;text-align:center;color:#b0bf94}
+@media(max-width:740px){.route-strip{padding:10px;gap:10px}.route-strip canvas{width:68px;height:34px}.route-copy strong{font-size:12px}.route-copy span{font-size:8px}.route-strip .garage-launch{padding:9px;font-size:8px}.map-grid{gap:12px;padding:14px}.map-card{padding:8px}.map-card strong{font-size:15px}.map-card p{font-size:10px}.city-navigation{top:6px;right:6px;width:110px;padding:4px}.city-navigation canvas{width:100px;height:75px}.city-navigation>span{font-size:6px}.city-navigation header{font-size:7px}.map-label{font-size:8px}}
+@media(max-width:450px){.map-grid{grid-template-columns:1fr}.map-card{display:grid;grid-template-columns:104px 1fr;gap:6px 12px}.map-card canvas{grid-row:1/5;width:104px;height:76px;align-self:center;object-fit:cover}.map-card strong{font-size:15px}.map-card p{min-height:0;font-size:10px}.map-card .map-status{padding-top:6px;font-size:8px}.route-copy span{max-width:120px;line-height:1.5}}
 </style>
 </head>
 <body>
 <div class="shell">
 <header><div class="brand"><div class="brand-icon">↯</div><div><div class="brand-name">КРАШ!</div><div class="brand-sub">ПИКСЕЛЬНАЯ АВТОРАЗБОРКА</div></div></div><div class="header-right"><i class="dot"></i> МАЛЕНЬКАЯ ИГРА. БОЛЬШОЙ БЕСПОРЯДОК.</div></header>
-<section class="intro"><div><h1>Газ в пол. <span>Всё в щепки.</span></h1><p>Заброшенный двор, одна машинка и ничего, что жалко разбить.</p></div><div class="tag">0.2 / ФИЗИКА / СВОБОДНЫЙ ЗАЕЗД</div></section>
+<section class="intro"><div><h1>Газ в пол. <span>Всё в щепки.</span></h1><p>Выбирай машину и маршрут. Двор для разноса или целый город для поездок.</p></div><div class="tag">0.2 / ФИЗИКА / СВОБОДНЫЙ ЗАЕЗД</div></section>
+<section class="route-strip" aria-label="Текущая карта"><canvas id="selectedMapPreview" width="240" height="120" aria-hidden="true"></canvas><div class="route-copy"><small>ТВОЙ МАРШРУТ</small><strong id="selectedMapName">Старый промдвор</strong><span id="selectedMapKind">Компактная арена · разнести всё</span></div><button class="garage-launch" type="button" id="mapOpen" aria-haspopup="dialog">ВЫБРАТЬ КАРТУ →</button></section>
 <section class="garage-strip" aria-label="Текущая машина"><canvas id="selectedCarPreview" width="112" height="64" aria-hidden="true"></canvas><div class="garage-selected"><small>ТВОЯ МАШИНА</small><strong id="selectedVehicleName">Дворняга</strong><span id="selectedVehicleKind">Первый хэтчбек</span></div><button class="garage-launch" type="button" id="garageOpen" aria-haspopup="dialog">В ГАРАЖ →</button></section>
 <section class="mode-settings" aria-label="Настройки заезда"><div class="mode-switch"><button type="button" data-mode="free" class="selected" aria-pressed="true">Свободный заезд</button><button type="button" data-mode="arcade" aria-pressed="false">90 секунд</button></div><label class="damage-option" id="damageOption"><input type="checkbox" id="invulnerability" checked><span>Неуязвимая машинка</span></label><span id="modeHelp" class="mode-help">Весь двор твой. Без таймера и финиша.</span></section><main class="layout">
-<section class="game" id="game"><div class="fullscreen-surround" aria-hidden="true"><i class="cabinet-rail left"></i><i class="cabinet-rail right"></i><span class="cabinet-stamp">CRASH MOTOR CO.<small>ДВОРОВОЙ АВТОМАТ · 01</small></span><span class="cabinet-number">СЕРИЯ / 01</span></div><div class="game-display" id="gameDisplay"><div class="game-toolbar"><div class="map-label"><span>01 /</span> СТАРЫЙ ПРОМДВОР</div><div class="tools"><button class="icon-btn" type="button" id="garageToolbar" title="Выбрать машину" aria-label="Выбрать машину" aria-haspopup="dialog">▤</button><button class="icon-btn music-on" id="music" title="Выключить музыку «Ночная смена» · 92 BPM" aria-label="Выключить музыку" aria-pressed="true">♫</button><button class="icon-btn fx-off" id="sound" title="Включить звук" aria-label="Включить звук" aria-pressed="false">FX</button><button class="icon-btn" id="pause" title="Пауза (P)" aria-label="Пауза">Ⅱ</button><button class="icon-btn" id="restart" title="Заново (R)" aria-label="Начать заново">↻</button><button class="icon-btn" id="full" title="На весь экран" aria-label="На весь экран">⛶</button></div></div>
-<div class="stage"><canvas tabindex="0" id="canvas" width="768" height="480" aria-label="Игровое поле. Управление: W A S D или стрелки, пробел или Shift — дрифт."></canvas><div id="driftIndicator" class="drift-indicator">ЗАНОС ↝</div><div class="toast" id="toast"></div><div class="overlay" id="overlay"><div class="modal"><div class="mini-car">▟▰▙</div><div class="eyebrow" id="eyebrow">ДОБРО ПОЖАЛОВАТЬ НА РАЗБОРКУ</div><h2 id="modalTitle">Устрой беспорядок.</h2><p id="modalText">Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.</p><button class="primary" id="start">ЗАВЕСТИ МОТОР →</button><small id="modalHint">WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ / SHIFT — РУЧНИК</small></div></div></div>
+<section class="game" id="game"><div class="fullscreen-surround" aria-hidden="true"><i class="cabinet-rail left"></i><i class="cabinet-rail right"></i><span class="cabinet-stamp">CRASH MOTOR CO.<small>ДВОРОВОЙ АВТОМАТ · 01</small></span><span class="cabinet-number">СЕРИЯ / 01</span></div><div class="game-display" id="gameDisplay"><div class="game-toolbar"><div class="map-label" id="mapLabel"><span>01 /</span> СТАРЫЙ ПРОМДВОР</div><div class="tools"><button class="icon-btn" type="button" id="mapToolbar" title="Выбрать карту" aria-label="Выбрать карту" aria-haspopup="dialog">▧</button><button class="icon-btn" type="button" id="garageToolbar" title="Выбрать машину" aria-label="Выбрать машину" aria-haspopup="dialog">▤</button><button class="icon-btn music-on" id="music" title="Выключить музыку «Ночная смена» · 92 BPM" aria-label="Выключить музыку" aria-pressed="true">♫</button><button class="icon-btn fx-off" id="sound" title="Включить звук" aria-label="Включить звук" aria-pressed="false">FX</button><button class="icon-btn" id="pause" title="Пауза (P)" aria-label="Пауза">Ⅱ</button><button class="icon-btn" id="restart" title="Заново (R)" aria-label="Начать заново">↻</button><button class="icon-btn" id="full" title="На весь экран" aria-label="На весь экран">⛶</button></div></div>
+<div class="stage"><canvas tabindex="0" id="canvas" width="768" height="480" aria-label="Игровое поле. Управление: W A S D или стрелки, пробел или Shift — дрифт."></canvas><div class="city-navigation" id="cityNavigation" hidden aria-label="Навигация по городу"><header><span>НОВОГРАД</span><button type="button" id="minimapToggle" aria-label="Свернуть или развернуть миникарту" aria-expanded="true">−</button></header><canvas id="minimap" width="144" height="108" aria-label="Миникарта: оранжевая точка — машина, светлая рамка — видимая область"></canvas><span id="districtName">ЮЖНЫЕ ГАРАЖИ</span></div><div id="driftIndicator" class="drift-indicator">ЗАНОС ↝</div><div class="toast" id="toast"></div><div class="overlay" id="overlay"><div class="modal"><div class="mini-car">▟▰▙</div><div class="eyebrow" id="eyebrow">ДОБРО ПОЖАЛОВАТЬ НА РАЗБОРКУ</div><h2 id="modalTitle">Устрой беспорядок.</h2><p id="modalText">Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.</p><button class="primary" id="start">ЗАВЕСТИ МОТОР →</button><small id="modalHint">WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ / SHIFT — РУЧНИК</small></div></div></div>
 <div class="instrument-panel" aria-label="Приборная панель"><i class="mount-fastener top-left" aria-hidden="true"></i><i class="mount-fastener top-right" aria-hidden="true"></i><i class="mount-fastener mid-left" aria-hidden="true"></i><i class="mount-fastener mid-right" aria-hidden="true"></i>
 <div class="console-trim"><b>КРАШ · БОРТ 01</b><span>ДВОРОВАЯ СБОРКА</span></div>
 <div class="console-glass" id="speedometer" role="group" aria-label="Цифровая приборная панель">
@@ -104,8 +118,8 @@ canvas.speed-dial{display:block;width:100%;height:auto;max-width:none;aspect-rat
 </div>
 <div class="console-lower" aria-hidden="true"><div class="console-vent"></div><span class="console-badge">CRASH MOTOR CO.</span><div class="console-vent"></div></div><i class="console-bolt left" aria-hidden="true"></i><i class="console-bolt right" aria-hidden="true"></i>
 </div>
-<div class="game-footer"><span class="live" id="status">● ДВОР ГОТОВ К РАЗНОСУ</span><span>ЯЩИКИ · КИРПИЧИ · ВЗРЫВНЫЕ БОЧКИ</span></div><details class="input-diagnostics" open><summary>ПРОВЕРКА УПРАВЛЕНИЯ <span>зелёный = нажатие получено</span></summary><div class="input-signals"><kbd id="input-up">↑ ГАЗ</kbd><kbd id="input-down">↓ НАЗАД</kbd><kbd id="input-left">←</kbd><kbd id="input-right">→</kbd><kbd id="input-handbrake">РУЧНИК</kbd></div><div class="input-motion"><span id="input-motion">ХОД: СТОИМ</span><span id="input-turn">ВРАЩЕНИЕ: —</span></div></details></div><dialog class="garage-dialog" id="garageDialog" aria-labelledby="garageTitle" aria-describedby="garageHelp"><div class="garage-top"><div><div class="eyebrow">08 МАШИН · ВСЕ ДОСТУПНЫ</div><h2 id="garageTitle">Ключи на выбор.</h2><p id="garageHelp">От дворовой классики до спорткара. Выбери свой силуэт — двор и набранные очки сохранятся.</p></div><button class="garage-close" type="button" id="garageClose" aria-label="Закрыть гараж">×</button></div><div class="garage-grid"><button type="button" class="vehicle-card" data-vehicle="dvor" aria-pressed="true" aria-label="Выбрать: Дворняга" title="Та самая оранжевая машинка. Собственный образ."><span class="vehicle-number">01</span><canvas id="garagePreview-dvor" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Дворняга</strong><small>Первый хэтчбек</small><span class="vehicle-status" id="vehicleStatus-dvor">ВЫБРАНА</span></span></button><button type="button" class="vehicle-card" data-vehicle="kopeika" aria-pressed="false" aria-label="Выбрать: Копеечка" title="Отсылка к ВАЗ-2101: хром, круглая оптика, простой силуэт."><span class="vehicle-number">02</span><canvas id="garagePreview-kopeika" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Копеечка</strong><small>Классический седан</small><span class="vehicle-status" id="vehicleStatus-kopeika">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="golf" aria-pressed="false" aria-label="Выбрать: Гольфстрим II" title="Отсылка к Volkswagen Golf II: короткий зад и чёрные бамперы."><span class="vehicle-number">03</span><canvas id="garagePreview-golf" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Гольфстрим II</strong><small>Угловатый хэтчбек</small><span class="vehicle-status" id="vehicleStatus-golf">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="bavarian" aria-pressed="false" aria-label="Выбрать: Баварец E-30" title="Отсылка к BMW E30: длинный капот и парные фары."><span class="vehicle-number">04</span><canvas id="garagePreview-bavarian" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Баварец E-30</strong><small>Спортивный седан</small><span class="vehicle-status" id="vehicleStatus-bavarian">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="meridian" aria-pressed="false" aria-label="Выбрать: Меридиан 124" title="Отсылка к Mercedes-Benz W124: строгий кузов и широкая оптика."><span class="vehicle-number">05</span><canvas id="garagePreview-meridian" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Меридиан 124</strong><small>Большой седан</small><span class="vehicle-status" id="vehicleStatus-meridian">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="niva" aria-pressed="false" aria-label="Выбрать: Нивушка 4×4" title="Отсылка к классической «Ниве»: широкие колёса и запаска."><span class="vehicle-number">06</span><canvas id="garagePreview-niva" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Нивушка 4×4</strong><small>Короткий внедорожник</small><span class="vehicle-status" id="vehicleStatus-niva">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="tofu" aria-pressed="false" aria-label="Выбрать: Тофу-86" title="Отсылка к Toyota AE86: чёрно-белый кузов и убирающиеся фары."><span class="vehicle-number">07</span><canvas id="garagePreview-tofu" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Тофу-86</strong><small>Купе из горных серпантинов</small><span class="vehicle-status" id="vehicleStatus-tofu">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="stuttgart" aria-pressed="false" aria-label="Выбрать: Штутгарт 911" title="Отсылка к Porsche 911: широкая корма, круглая оптика и спойлер."><span class="vehicle-number">08</span><canvas id="garagePreview-stuttgart" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Штутгарт 911</strong><small>Округлый спорткар</small><span class="vehicle-status" id="vehicleStatus-stuttgart">ВЫБРАТЬ →</span></span></button></div><div class="garage-bottom">У каждого авто свой пиксельный кузов. Физика и управляемый занос пока общие.<br>«Дворняга» — оригинальная оранжевая машинка, без конкретного реального прототипа.</div></dialog></section>
-<aside><div class="card"><div class="card-title">ТВОЙ БЕСПОРЯДОК</div><div class="score" id="score">00000</div><div class="record"><span id="recordLabel">РЕКОРД СВОБОДНОГО ЗАЕЗДА</span> <b id="best">00000</b></div><div class="stats-row"><div class="label-small" id="timeLabel">БЕЗ ТАЙМЕРА</div><div class="timer" id="timer">01:30</div></div></div><div class="card"><div class="card-title">СОСТОЯНИЕ ДВОРА</div><div class="progress-label"><span>Разрушено</span><b id="percent">0 / 65%</b></div><div class="bar"><i id="destruction"></i></div><div class="progress-label"><span id="healthLabel">Урон отключён</span><b id="hp">100%</b></div><div class="bar health"><i id="health"></i></div><p class="target-note">Зелёные ремкомплекты чинят машину. Красные бочки любят взрываться.</p></div><div class="card controls"><div class="card-title">КАК РАЗНЕСТИ ЭТО МЕСТО</div><div class="control-row"><div class="keys"><kbd>W</kbd><kbd>↑</kbd></div><span>Газ</span></div><div class="control-row"><div class="keys"><kbd>S</kbd><kbd>↓</kbd></div><span>Тормоз / назад</span></div><div class="control-row"><div class="keys"><kbd>A</kbd><kbd>D</kbd><kbd>←</kbd><kbd>→</kbd></div><span>Поворот</span></div><div class="control-row"><div class="keys"><kbd>ПРОБЕЛ</kbd><kbd>SHIFT</kbd></div><span>Ручник</span></div><p class="tip">Больше скорость — сильнее удар.<br>Бочки запускают цепную реакцию.</p></div></aside>
+<div class="game-footer"><span class="live" id="status">● ДВОР ГОТОВ К РАЗНОСУ</span><span id="worldFeatures">ЯЩИКИ · КИРПИЧИ · ВЗРЫВНЫЕ БОЧКИ</span></div><details class="input-diagnostics" open><summary>ПРОВЕРКА УПРАВЛЕНИЯ <span>зелёный = нажатие получено</span></summary><div class="input-signals"><kbd id="input-up">↑ ГАЗ</kbd><kbd id="input-down">↓ НАЗАД</kbd><kbd id="input-left">←</kbd><kbd id="input-right">→</kbd><kbd id="input-handbrake">РУЧНИК</kbd></div><div class="input-motion"><span id="input-motion">ХОД: СТОИМ</span><span id="input-turn">ВРАЩЕНИЕ: —</span></div></details></div><dialog class="garage-dialog" id="garageDialog" aria-labelledby="garageTitle" aria-describedby="garageHelp"><div class="garage-top"><div><div class="eyebrow">08 МАШИН · ВСЕ ДОСТУПНЫ</div><h2 id="garageTitle">Ключи на выбор.</h2><p id="garageHelp">От дворовой классики до спорткара. Выбери свой силуэт — двор и набранные очки сохранятся.</p></div><button class="garage-close" type="button" id="garageClose" aria-label="Закрыть гараж">×</button></div><div class="garage-grid"><button type="button" class="vehicle-card" data-vehicle="dvor" aria-pressed="true" aria-label="Выбрать: Дворняга" title="Та самая оранжевая машинка. Собственный образ."><span class="vehicle-number">01</span><canvas id="garagePreview-dvor" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Дворняга</strong><small>Первый хэтчбек</small><span class="vehicle-status" id="vehicleStatus-dvor">ВЫБРАНА</span></span></button><button type="button" class="vehicle-card" data-vehicle="kopeika" aria-pressed="false" aria-label="Выбрать: Копеечка" title="Отсылка к ВАЗ-2101: хром, круглая оптика, простой силуэт."><span class="vehicle-number">02</span><canvas id="garagePreview-kopeika" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Копеечка</strong><small>Классический седан</small><span class="vehicle-status" id="vehicleStatus-kopeika">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="golf" aria-pressed="false" aria-label="Выбрать: Гольфстрим II" title="Отсылка к Volkswagen Golf II: короткий зад и чёрные бамперы."><span class="vehicle-number">03</span><canvas id="garagePreview-golf" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Гольфстрим II</strong><small>Угловатый хэтчбек</small><span class="vehicle-status" id="vehicleStatus-golf">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="bavarian" aria-pressed="false" aria-label="Выбрать: Баварец E-30" title="Отсылка к BMW E30: длинный капот и парные фары."><span class="vehicle-number">04</span><canvas id="garagePreview-bavarian" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Баварец E-30</strong><small>Спортивный седан</small><span class="vehicle-status" id="vehicleStatus-bavarian">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="meridian" aria-pressed="false" aria-label="Выбрать: Меридиан 124" title="Отсылка к Mercedes-Benz W124: строгий кузов и широкая оптика."><span class="vehicle-number">05</span><canvas id="garagePreview-meridian" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Меридиан 124</strong><small>Большой седан</small><span class="vehicle-status" id="vehicleStatus-meridian">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="niva" aria-pressed="false" aria-label="Выбрать: Нивушка 4×4" title="Отсылка к классической «Ниве»: широкие колёса и запаска."><span class="vehicle-number">06</span><canvas id="garagePreview-niva" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Нивушка 4×4</strong><small>Короткий внедорожник</small><span class="vehicle-status" id="vehicleStatus-niva">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="tofu" aria-pressed="false" aria-label="Выбрать: Тофу-86" title="Отсылка к Toyota AE86: чёрно-белый кузов и убирающиеся фары."><span class="vehicle-number">07</span><canvas id="garagePreview-tofu" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Тофу-86</strong><small>Купе из горных серпантинов</small><span class="vehicle-status" id="vehicleStatus-tofu">ВЫБРАТЬ →</span></span></button><button type="button" class="vehicle-card" data-vehicle="stuttgart" aria-pressed="false" aria-label="Выбрать: Штутгарт 911" title="Отсылка к Porsche 911: широкая корма, круглая оптика и спойлер."><span class="vehicle-number">08</span><canvas id="garagePreview-stuttgart" width="112" height="64" aria-hidden="true"></canvas><span class="vehicle-info"><strong>Штутгарт 911</strong><small>Округлый спорткар</small><span class="vehicle-status" id="vehicleStatus-stuttgart">ВЫБРАТЬ →</span></span></button></div><div class="garage-bottom">У каждого авто свой пиксельный кузов. Физика и управляемый занос пока общие.<br>«Дворняга» — оригинальная оранжевая машинка, без конкретного реального прототипа.</div></dialog><dialog class="garage-dialog map-dialog" id="mapDialog" aria-labelledby="mapTitle" aria-describedby="mapHelp"><div class="garage-top"><div><div class="eyebrow">02 КАРТЫ · ЛЮБОЙ МАРШРУТ</div><h2 id="mapTitle">Куда поедем?</h2><p id="mapHelp">Смена карты начинает новый заезд. Выбранная машина сохраняется.</p></div><button class="garage-close" type="button" id="mapClose" aria-label="Закрыть выбор карты">×</button></div><div class="map-grid"><button type="button" class="map-card" data-map="yard" aria-pressed="true"><canvas id="mapPreview-yard" width="240" height="120" aria-hidden="true"></canvas><small>01 / АРЕНА</small><strong>Старый промдвор</strong><p>Знакомый двор с кирпичными стенами, ящиками и взрывными бочками. Свобода или заезд на время.</p><span class="map-status" id="mapStatus-yard">ТЕКУЩАЯ КАРТА</span></button><button type="button" class="map-card" data-map="city" aria-pressed="false"><canvas id="mapPreview-city" width="240" height="120" aria-hidden="true"></canvas><small>02 / В 34 РАЗА БОЛЬШЕ</small><strong>Новоград</strong><p>Большой город: проспекты, дворы, магазины, парки и промзона. Свободная езда без таймера.</p><span class="map-status" id="mapStatus-city">ВЫБРАТЬ МАРШРУТ →</span></button></div><div class="garage-bottom">Камера следует за машиной. В Новограде ориентируйся по миникарте и названиям районов.<br>Здания стоят прочно, а ограды, деревья, ящики и бочки можно разносить.</div></dialog></section>
+<aside><div class="card"><div class="card-title">ТВОЙ БЕСПОРЯДОК</div><div class="score" id="score">00000</div><div class="record"><span id="recordLabel">РЕКОРД СВОБОДНОГО ЗАЕЗДА</span> <b id="best">00000</b></div><div class="stats-row"><div class="label-small" id="timeLabel">БЕЗ ТАЙМЕРА</div><div class="timer" id="timer">01:30</div></div></div><div class="card"><div class="card-title">СОСТОЯНИЕ КАРТЫ</div><div class="progress-label"><span>Разрушено</span><b id="percent">0 / 65%</b></div><div class="bar"><i id="destruction"></i></div><div class="progress-label"><span id="healthLabel">Урон отключён</span><b id="hp">100%</b></div><div class="bar health"><i id="health"></i></div><p class="target-note">Зелёные ремкомплекты чинят машину. Красные бочки любят взрываться.</p></div><div class="card controls"><div class="card-title">КАК РАЗНЕСТИ ЭТО МЕСТО</div><div class="control-row"><div class="keys"><kbd>W</kbd><kbd>↑</kbd></div><span>Газ</span></div><div class="control-row"><div class="keys"><kbd>S</kbd><kbd>↓</kbd></div><span>Тормоз / назад</span></div><div class="control-row"><div class="keys"><kbd>A</kbd><kbd>D</kbd><kbd>←</kbd><kbd>→</kbd></div><span>Поворот</span></div><div class="control-row"><div class="keys"><kbd>ПРОБЕЛ</kbd><kbd>SHIFT</kbd></div><span>Ручник</span></div><p class="tip">Больше скорость — сильнее удар.<br>Бочки запускают цепную реакцию.</p></div></aside>
 </main>
 <div class="touch" aria-label="Сенсорное управление"><div class="touch-group"><button data-key="ArrowLeft" aria-label="Налево">◀</button><button data-key="ArrowRight" aria-label="Направо">▶</button></div><div class="touch-group"><button data-key="Space">ДРИФТ</button><button data-key="ArrowDown" aria-label="Назад">▼</button><button data-key="ArrowUp" aria-label="Газ">▲</button></div></div>
 <section class="bottom"><div class="detail"><div class="detail-icon">▦</div><div><h3>Всё по кирпичику</h3><p>Стены обваливаются, обломки отскакивают.</p></div></div><div class="detail"><div class="detail-icon">⌁</div><div><h3>Повороты с характером</h3><p>Лови настоящий занос. Оставляй дым и следы.</p></div></div><div class="detail"><div class="detail-icon">↻</div><div><h3>Ещё один заезд?</h3><p>Гуляй без таймера. Жми R для нового двора.</p></div></div></section>
@@ -338,7 +352,7 @@ const drivingKeys = new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','
 const FLEET=[{"id":"dvor","name":"Дворняга","kind":"Первый хэтчбек","inspiration":"Та самая оранжевая машинка. Собственный образ.","paint":"#ee773d","shade":"#9e432a","light":"#ffc17a","shape":"hatch","half":7,"length":28,"roof":10},{"id":"kopeika","name":"Копеечка","kind":"Классический седан","inspiration":"Отсылка к ВАЗ-2101: хром, круглая оптика, простой силуэт.","paint":"#e6d09c","shade":"#9c8052","light":"#fff0c4","shape":"classic","half":8,"length":30,"roof":11},{"id":"golf","name":"Гольфстрим II","kind":"Угловатый хэтчбек","inspiration":"Отсылка к Volkswagen Golf II: короткий зад и чёрные бамперы.","paint":"#ce4f40","shade":"#7e302c","light":"#f28b69","shape":"golf","half":8,"length":26,"roof":12},{"id":"bavarian","name":"Баварец E-30","kind":"Спортивный седан","inspiration":"Отсылка к BMW E30: длинный капот и парные фары.","paint":"#6799c6","shade":"#315b83","light":"#b0d3e8","shape":"bavarian","half":8,"length":31,"roof":11},{"id":"meridian","name":"Меридиан 124","kind":"Большой седан","inspiration":"Отсылка к Mercedes-Benz W124: строгий кузов и широкая оптика.","paint":"#b6c3bb","shade":"#697c74","light":"#e8eee0","shape":"meridian","half":9,"length":34,"roof":13},{"id":"niva","name":"Нивушка 4×4","kind":"Короткий внедорожник","inspiration":"Отсылка к классической «Ниве»: широкие колёса и запаска.","paint":"#9caf6a","shade":"#52683c","light":"#d9df9e","shape":"niva","half":9,"length":27,"roof":13},{"id":"tofu","name":"Тофу-86","kind":"Купе из горных серпантинов","inspiration":"Отсылка к Toyota AE86: чёрно-белый кузов и убирающиеся фары.","paint":"#eee9d4","shade":"#8c9589","light":"#fff9e2","shape":"tofu","half":8,"length":30,"roof":10},{"id":"stuttgart","name":"Штутгарт 911","kind":"Округлый спорткар","inspiration":"Отсылка к Porsche 911: широкая корма, круглая оптика и спойлер.","paint":"#e7ba4d","shade":"#9a6b31","light":"#ffe795","shape":"sport","half":9,"length":30,"roof":10}];
 let vehicleId='dvor',garageOpen=false,garageWasPlaying=false;
 try{const saved=localStorage.getItem('crash-vehicle');if(FLEET.some(model=>model.id===saved))vehicleId=saved}catch{}
-const palette = {brick:['#ac6144','#bf7450','#98593e'],crate:['#b78a4c','#c39c60','#a7783d'],barrel:['#b84f38'],fence:['#9f9a70']};
+const palette = {brick:['#ac6144','#bf7450','#98593e'],crate:['#b78a4c','#c39c60','#a7783d'],barrel:['#b84f38'],fence:['#9f9a70'],tree:['#557b45','#719455','#446b42']};
 let objects=[], particles=[], debris=[], rings=[], scars=[], skids=[], pickups=[], popups=[], collapseQueue=[], groups=[], grid=new Map();
 let car, state='ready', mode='free', invulnerable=true, remaining=90, elapsed=0, score=0, dead=0, total=0, shake=0;
 let combo=0, comboTime=0, toastTime=0, last=0, muted=true, audio=null, best=0, seed=301, cleared=false, driftSmoke=0;
@@ -364,8 +378,8 @@ function updateControlDiagnostics(){
  $('input-turn').textContent=Math.abs(car.yaw)<.12?'ВРАЩЕНИЕ: —':car.yaw>0?'ВРАЩЕНИЕ: ↻':'ВРАЩЕНИЕ: ↺';
 }
 function immortal(){return mode==='free' && invulnerable}
-function loadBest(){try{best=Number(localStorage.getItem(mode==='free'?'crash-best-free':'crash-best')||0)}catch{best=0}$('best').textContent=String(best).padStart(5,'0')}
-function saveBest(){if(score<=best)return;best=score;try{localStorage.setItem(mode==='free'?'crash-best-free':'crash-best',String(best))}catch{}$('best').textContent=String(best).padStart(5,'0')}
+function loadBest(){try{best=Number(localStorage.getItem(recordKey())||0)}catch{best=0}$('best').textContent=String(best).padStart(5,'0')}
+function saveBest(){if(score<=best)return;best=score;try{localStorage.setItem(recordKey(),String(best))}catch{}$('best').textContent=String(best).padStart(5,'0')}
 function syncKey(code){
  const pressed=keyboardKeys.has(code)||[...pointerKeys.values()].includes(code);
  if(pressed)keys.add(code);else keys.delete(code);
@@ -373,11 +387,223 @@ function syncKey(code){
  updateControlDiagnostics();
 }
 function clearInput(){keyboardKeys.clear();pointerKeys.clear();keys.clear();for(const b of document.querySelectorAll('[data-key]'))b.classList.remove('active');updateControlDiagnostics()}
-function add(x,y,type,w=16,h=16,group=-1){const o={x,y,w,h,type,group,hp:type==='brick'?1.3:1,alive:true,tone:Math.floor(rand()*3),hit:0};objects.push(o);if(group>=0)groups[group].members.push(o);for(let gx=Math.floor(x/32);gx<=Math.floor((x+w)/32);gx++)for(let gy=Math.floor(y/32);gy<=Math.floor((y+h)/32);gy++){const k=gx+','+gy;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(o)}}
+function add(x,y,type,w=16,h=16,group=-1){const o={x,y,w,h,type,group,hp:type==='brick'?1.3:1,alive:true,tone:Math.floor(rand()*3),hit:0};objects.push(o);if(group>=0)groups[group].members.push(o);for(let gx=Math.floor(x/32);gx<=Math.floor((x+w)/32);gx++)for(let gy=Math.floor(y/32);gy<=Math.floor((y+h)/32);gy++){const k=gx+','+gy;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(o)}return o}
 function nearby(x,y,r=15){const found=new Set();for(let gx=Math.floor((x-r)/32);gx<=Math.floor((x+r)/32);gx++)for(let gy=Math.floor((y-r)/32);gy<=Math.floor((y+r)/32);gy++)for(const o of grid.get(gx+','+gy)||[])if(o.alive)found.add(o);return found}
-function reset(){dialSpeed=0;seed=301;objects=[];particles=[];debris=[];rings=[];scars=[];skids=[];pickups=[];popups=[];collapseQueue=[];groups=[];grid=new Map();remaining=90;elapsed=0;score=0;dead=0;combo=0;comboTime=0;shake=0;cleared=false;driftSmoke=0;clearInput();
- car={modelId:vehicleId,x:384,y:387,a:-Math.PI/2,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0,driftBlend:0};
- const wall=(x,y,cols,rows)=>{const group=groups.length;groups.push({members:[],lost:0,collapsed:false});for(let j=0;j<rows;j++)for(let i=0;i<cols;i++)add(x+i*12,y+j*10,'brick',12,10,group)};
+// Two worlds share the driving model; the canvas is a viewport, not the world boundary.
+const MAPS=[
+ {id:'yard',name:'Старый промдвор',subtitle:'Компактная арена · разнести всё',w:768,h:480,spawn:[384,387],seed:301},
+ {id:'city',name:'Новоград',subtitle:'Большой город · свободный маршрут',w:4096,h:3072,spawn:[704,2620],seed:8041}
+];
+const CITY_X=Array.from({length:8},(_,i)=>192+i*512),CITY_Y=Array.from({length:6},(_,i)=>192+i*512);
+let mapId='yard',worldW=W,worldH=H,mapOpen=false,mapWasPlaying=false;
+let camera={x:0,y:0},cityLots=[],lastDistrict='',minimapVisible=true;
+try{const saved=localStorage.getItem('crash-map');if(MAPS.some(m=>m.id===saved))mapId=saved}catch{}
+function activeMap(){return MAPS.find(m=>m.id===mapId)||MAPS[0]}
+function recordKey(){return mapId==='yard'?(mode==='free'?'crash-best-free':'crash-best'):'crash-best-city-free'}
+function wall(x,y,cols,rows){
+ const group=groups.length;groups.push({members:[],lost:0,collapsed:false});
+ for(let j=0;j<rows;j++)for(let i=0;i<cols;i++)add(x+i*12,y+j*10,'brick',12,10,group);
+}
+function building(x,y,w,h,kind,index){
+ const o=add(x,y,'building',w,h);o.solid=true;o.hp=Infinity;o.kind=kind;o.index=index;
+}
+function buildCity(){
+ cityLots=[];
+ for(let row=0;row<CITY_Y.length-1;row++)for(let col=0;col<CITY_X.length-1;col++){
+  const x=CITY_X[col]+82,y=CITY_Y[row]+82,w=348,h=348;
+  const park=(row===2&&col===3)||(row===0&&col===1)||(row===3&&col===5);
+  const kind=park?'park':row>=3&&col<3?'industrial':(col+row*3)%5===0?'parking':'residential';
+  cityLots.push({x,y,w,h,kind,row,col});
+  if(kind==='park'){
+   for(let i=0;i<16;i++){
+    const tx=x+28+(i%4)*88,ty=y+28+Math.floor(i/4)*88;
+    if(Math.abs(tx-(x+w/2))>28&&Math.abs(ty-(y+h/2))>28)add(tx,ty,'tree',24,24);
+   }
+   for(const dx of [18,w-30])for(let i=0;i<3;i++)add(x+dx,y+110+i*40,'fence',12,9);
+  }else if(kind==='parking'){
+   building(x+218,y+22,108,84,'shop',row*7+col);
+   for(let i=0;i<6;i++){
+    add(x+26+i*44,y+294,'crate',19,19);
+    if(i%2===0)add(x+246+(i%3)*22,y+134,'barrel',13,17);
+   }
+   wall(x+20,y+326,12,1);wall(x+240,y+326,7,1);
+  }else if(kind==='industrial'){
+   building(x+22,y+22,210,134,'factory',row*7+col);
+   building(x+22,y+224,132,100,'garage',row*7+col);
+   for(let j=0;j<3;j++)for(let i=0;i<4;i++)add(x+244+i*22,y+30+j*24,'crate',19,19);
+   for(let i=0;i<4;i++)add(x+210+i*22,y+270,'barrel',13,17);
+   wall(x+178,y+214,2,8);wall(x+244,y+314,7,2);
+  }else{
+   const inset=22;
+   building(x+inset,y+inset,132,108,'home',row*7+col);
+   building(x+198,y+inset,128,148,(col+row)%3===0?'shop':'home',row*7+col+1);
+   building(x+inset,y+222,154,104,(col+row)%4===0?'cafe':'home',row*7+col+2);
+   for(let i=0;i<4;i++)add(x+212+i*26,y+254,'tree',24,24);
+   for(let i=0;i<3;i++)add(x+184,y+42+i*30,'crate',19,19);
+   wall(x+200,y+322,10,1);
+  }
+  // Keep the road network empty; obstacles sit inside the courtyards.
+  if((row+col)%2===0)pickups.push({x:x+184,y:y+184,alive:true});
+ }
+ pickups.push({x:704,y:2560,alive:true},{x:2240,y:704,alive:true},{x:3264,y:2240,alive:true});
+}
+function updateCamera(dt=0,snap=false){
+ const targetX=clamp(car.x-W/2+car.vx*.22,0,Math.max(0,worldW-W));
+ const targetY=clamp(car.y-H/2+car.vy*.22,0,Math.max(0,worldH-H));
+ const blend=snap?1:1-Math.exp(-7*dt);
+ camera.x+=(targetX-camera.x)*blend;camera.y+=(targetY-camera.y)*blend;
+}
+function visible(x,y,w=1,h=1,margin=48){return x+w>=camera.x-margin&&x<=camera.x+W+margin&&y+h>=camera.y-margin&&y<=camera.y+H+margin}
+function visibleObjects(){
+ if(mapId==='yard')return objects;
+ const found=new Set();
+ for(let x=Math.floor((camera.x-48)/32);x<=Math.floor((camera.x+W+48)/32);x++)
+  for(let y=Math.floor((camera.y-48)/32);y<=Math.floor((camera.y+H+48)/32);y++)
+   for(const o of grid.get(x+','+y)||[])found.add(o);
+ return [...found];
+}
+function cityGround(){
+ rect(camera.x-2,camera.y-2,W+4,H+4,'#455442');
+ for(let gy=Math.floor(camera.y/32);gy<=(camera.y+H)/32;gy++)for(let gx=Math.floor(camera.x/32);gx<=(camera.x+W)/32;gx++){
+  const hash=(gx*137+gy*197)>>>0;rect(gx*32+hash%23,gy*32+(hash*7)%27,3,1,hash%3?'#4c5c45':'#3e4d3b');
+ }
+ for(const lot of cityLots)if(visible(lot.x,lot.y,lot.w,lot.h)){
+  const {x,y,w,h,kind}=lot;
+  rect(x-16,y-16,w+32,h+32,'#787d68');rect(x-12,y-12,w+24,h+24,'#999b80');
+  rect(x,y,w,h,kind==='park'?'#586d42':kind==='parking'?'#515b50':'#68705a');
+  if(kind==='park'){
+   rect(x+w/2-13,y,26,h,'#aaa17b');rect(x,y+h/2-13,w,26,'#aaa17b');
+   rect(x+w/2-30,y+h/2-30,60,60,'#858771');rect(x+w/2-23,y+h/2-23,46,46,'#4c7774');rect(x+w/2-17,y+h/2-17,34,34,'#709b8d');
+   for(let i=0;i<4;i++){rect(x+58+i*64,y+67,18,5,'#b1a26b');rect(x+58+i*64,y+73,3,3,'#333f30')}
+  }else if(kind==='parking'){
+   for(let i=0;i<6;i++){rect(x+20+i*32,y+42,1,55,'#a4a17b');rect(x+20+i*32,y+42,25,1,'#a4a17b');rect(x+20+i*32,y+190,1,55,'#a4a17b');rect(x+20+i*32,y+244,25,1,'#a4a17b')}
+   ctx.fillStyle='#9a9e7b';ctx.font='bold 25px monospace';ctx.fillText('P',x+84,y+155);
+  }else{
+   rect(x+170,y+10,18,h-20,'#535e4d');rect(x+10,y+182,w-20,19,'#535e4d');
+   for(let i=0;i<9;i++)rect(x+170,y+18+i*36,18,1,'#7b8067');
+  }
+ }
+ for(const x of CITY_X)if(visible(x-80,0,160,worldH)){
+  rect(x-80,0,160,worldH,'#9a9b80');rect(x-68,0,136,worldH,'#555f53');rect(x-64,0,128,worldH,'#343d38');
+  rect(x-48,0,1,worldH,'#626b5a');rect(x+47,0,1,worldH,'#626b5a');
+ }
+ for(const y of CITY_Y)if(visible(0,y-80,worldW,160)){
+  rect(0,y-80,worldW,160,'#9a9b80');rect(0,y-68,worldW,136,'#555f53');rect(0,y-64,worldW,128,'#343d38');
+  rect(0,y-48,worldW,1,'#626b5a');rect(0,y+47,worldW,1,'#626b5a');
+ }
+ for(const x of CITY_X)if(visible(x-80,0,160,worldH))for(let y=Math.floor(camera.y/48)*48;y<camera.y+H+48;y+=48)
+  if(!CITY_Y.some(c=>Math.abs(c-y)<92))rect(x-1,y,2,22,'#b9aa70');
+ for(const y of CITY_Y)if(visible(0,y-80,worldW,160))for(let x=Math.floor(camera.x/48)*48;x<camera.x+W+48;x+=48)
+  if(!CITY_X.some(c=>Math.abs(c-x)<92))rect(x,y-1,22,2,'#b9aa70');
+ for(const x of CITY_X)for(const y of CITY_Y)if(visible(x-90,y-90,180,180)){
+  rect(x-68,y-68,136,136,'#343d38');
+  for(let i=0;i<7;i++)for(const side of [-1,1]){
+   rect(x-43+i*13,y+side*78-6,7,12,'#b3b296');rect(x+side*78-6,y-43+i*13,12,7,'#b3b296');
+  }
+  for(const [sx,sy] of [[-1,-1],[1,1]]){
+   rect(x+sx*74-2,y+sy*91,4,18,'#29392b');rect(x+sx*74-4,y+sy*91-1,8,12,'#222c24');rect(x+sx*74-2,y+sy*91+2,4,3,'#b7d679');
+  }
+ }
+ // Small gutters, worn asphalt, and the outside perimeter remain fixed in world space.
+ for(let gy=Math.floor(camera.y/48);gy<=(camera.y+H)/48;gy++)for(let gx=Math.floor(camera.x/48);gx<=(camera.x+W)/48;gx++){
+  const h=(gx*97+gy*61)>>>0;rect(gx*48+h%31,gy*48+(h*13)%37,3,1,'#a3a38533');
+ }
+ rect(0,0,worldW,16,'#283b2a');rect(0,worldH-16,worldW,16,'#283b2a');rect(0,0,16,worldH,'#283b2a');rect(worldW-16,0,16,worldH,'#283b2a');
+}
+function drawBuilding(o){
+ const {x,y,w,h,kind,index}=o;
+ const roof=['#797d65','#8b7057','#677777','#927f68'][(index||0)%4];
+ rect(x+8,y+10,w,h,'#18251f66');rect(x,y,w,h,'#323f36');rect(x,y,w,5,'#c0b28a');
+ rect(x+3,y+5,w-6,h-12,'#9b9278');rect(x+7,y+8,w-14,h-20,roof);
+ for(let sy=y+18;sy<y+h-19;sy+=14)rect(x+10,sy,w-20,1,'#263d3333');
+ rect(x+8,y+8,w-16,2,'#d5c29b55');rect(x+8,y+h-15,w-16,3,'#39493b');
+ for(let sx=x+14;sx<x+w-20;sx+=24){rect(sx,y+h-9,12,5,'#2a4742');rect(sx+1,y+h-9,9,1,'#8fa699')}
+ const ventX=x+w-36;rect(ventX+2,y+20,20,18,'#3b4b3d');rect(ventX,y+17,20,18,'#abb29a');
+ for(let i=0;i<4;i++)rect(ventX+3,y+20+i*3,14,1,'#5d7160');
+ rect(x+21,y+22,12,15,'#505f4c');rect(x+20,y+20,12,14,'#a9a98a');
+ const doorX=x+Math.floor(w/2)-10;rect(doorX,y+h-7,20,9,'#1b2c25');rect(doorX+3,y+h-6,14,6,'#5e7e6b');
+ if(kind==='shop'||kind==='cafe'||kind==='garage'){
+  const awning=kind==='cafe'?'#b1734d':kind==='garage'?'#718b67':'#629e8c';
+  rect(x+12,y+h-21,w-24,14,awning);for(let sx=x+14;sx<x+w-15;sx+=12)rect(sx,y+h-21,5,14,'#dfcf9e44');
+  ctx.fillStyle='#f1e1b1';ctx.font='bold 8px monospace';ctx.fillText(kind==='cafe'?'CAFE':kind==='garage'?'GARAGE':'MARKET',x+18,y+h-11);
+ }else if(kind==='factory'){
+  for(let sx=x+48;sx<x+w-20;sx+=34){rect(sx,y+28,19,60,'#485b53');rect(sx+2,y+30,15,56,'#819888');rect(sx+2,y+56,15,2,'#4b6456')}
+  rect(x+18,y+h-28,w-36,12,'#3e5447');ctx.fillStyle='#c1bd8e';ctx.font='bold 8px monospace';ctx.fillText('NOVOGRAD / DEPOT',x+24,y+h-19);
+ }
+}
+function drawTree(o){
+ const {x,y}=o;rect(x+5,y+9,26,22,'#15281e55');rect(x+10,y+17,5,13,'#6e573b');
+ rect(x+3,y+3,19,20,'#304c32');rect(x,y+8,25,11,'#3b603a');rect(x+6,y,12,23,'#477347');rect(x+5,y+4,13,5,'#69874f');rect(x+2,y+11,6,3,'#537c42');
+}
+function districtName(){
+ const col=Math.floor(car.x/512),row=Math.floor(car.y/512);
+ if(row>=4&&col<3)return 'ЮЖНЫЕ ГАРАЖИ';
+ if(col>=5&&row>=3)return 'ЗЕЛЁНЫЙ КВАРТАЛ';
+ if(row<=1)return 'СЕВЕРНЫЙ РАЙОН';
+ return col<3?'ПРОМЫШЛЕННЫЙ РАЙОН':col>=5?'ВОСТОЧНЫЙ РАЙОН':'ЦЕНТР';
+}
+function drawMinimap(){
+ if(mapId!=='city')return;
+ const district=districtName();if(district!==lastDistrict){lastDistrict=district;$('districtName').textContent=district}
+ if(!minimapVisible)return;
+ const g=$('minimap').getContext('2d'),sx=144/worldW,sy=108/worldH;
+ g.fillStyle='#1b2d23';g.fillRect(0,0,144,108);
+ g.fillStyle='#62735d';for(const x of CITY_X)g.fillRect(x*sx-2,0,4,108);for(const y of CITY_Y)g.fillRect(0,y*sy-2,144,4);
+ for(const lot of cityLots){g.fillStyle=lot.kind==='park'?'#7b9555':lot.kind==='industrial'?'#9c835a':'#455b48';g.fillRect(lot.x*sx,lot.y*sy,lot.w*sx,lot.h*sy)}
+ g.strokeStyle='#b3ceb077';g.lineWidth=1;g.strokeRect(camera.x*sx,camera.y*sy,W*sx,H*sy);
+ g.fillStyle='#ff8a4f';g.fillRect(car.x*sx-2,car.y*sy-2,5,5);
+ g.strokeStyle='#ffe0a4';g.beginPath();g.moveTo(car.x*sx,car.y*sy);g.lineTo(car.x*sx+Math.cos(car.a)*6,car.y*sy+Math.sin(car.a)*6);g.stroke();
+}
+function drawMapPreview(target,id){
+ const g=target.getContext('2d');g.imageSmoothingEnabled=false;
+ g.fillStyle='#293d2b';g.fillRect(0,0,240,120);
+ if(id==='city'){
+  g.fillStyle='#899477';for(let i=0;i<6;i++)g.fillRect(17+i*41,0,12,120);for(let i=0;i<4;i++)g.fillRect(0,8+i*33,240,10);
+  for(let r=0;r<3;r++)for(let c=0;c<5;c++){g.fillStyle=(r+c)%4?'#6d7760':'#759658';g.fillRect(34+c*41,23+r*33,23,18);g.fillStyle='#aaa181';g.fillRect(35+c*41,24+r*33,15,6)}
+  g.fillStyle='#fb8d4c';g.fillRect(62,84,5,8);
+ }else{
+  g.fillStyle='#4a513b';g.fillRect(8,8,224,104);g.fillStyle='#2e3b2e';g.fillRect(92,8,54,104);g.fillRect(8,53,224,24);
+  g.fillStyle='#a76346';for(const [x,y] of [[30,24],[163,24],[30,80],[163,80]]){g.fillRect(x,y,43,4);g.fillRect(x,y,4,22);g.fillRect(x+39,y,4,22)}
+  g.fillStyle='#fb8d4c';g.fillRect(115,83,7,12);
+ }
+}
+function syncMapUI(){
+ const map=activeMap();$('selectedMapName').textContent=map.name;$('selectedMapKind').textContent=map.subtitle;
+ $('mapOpen').setAttribute('aria-label','Выбрать карту. Сейчас '+map.name);
+ $('mapLabel').innerHTML='<span>'+(mapId==='city'?'02':'01')+' /</span> '+map.name.toUpperCase();
+ $('worldFeatures').textContent=mapId==='city'?'ПРОСПЕКТЫ · ДВОРЫ · ПАРКИ':'ЯЩИКИ · КИРПИЧИ · ВЗРЫВНЫЕ БОЧКИ';
+ $('cityNavigation').hidden=mapId!=='city';lastDistrict='';
+ for(const button of document.querySelectorAll('[data-map]')){const active=button.dataset.map===mapId;button.setAttribute('aria-pressed',String(active));$('mapStatus-'+button.dataset.map).textContent=active?'ТЕКУЩАЯ КАРТА':'ВЫБРАТЬ МАРШРУТ →'}
+ drawMapPreview($('selectedMapPreview'),mapId);
+}
+function selectMap(id){
+ if(!MAPS.some(m=>m.id===id))return false;
+ if(id===mapId){closeMapChooser();return true}
+ saveBest();mapId=id;if(mapId==='city')mode='free';
+ try{localStorage.setItem('crash-map',mapId)}catch{}
+ mapWasPlaying=false;loadBest();syncSettings();syncMapUI();ready();closeMapChooser();return true;
+}
+function openMapChooser(){
+ if(mapOpen||garageOpen)return;
+ mapWasPlaying=state==='playing';if(mapWasPlaying)pause();clearInput();mapOpen=true;$('mapDialog').showModal();
+}
+function closeMapChooser(){if(mapOpen)$('mapDialog').close()}
+function setupMapChooser(){
+ syncMapUI();for(const map of MAPS)drawMapPreview($('mapPreview-'+map.id),map.id);
+ $('mapOpen').onclick=openMapChooser;$('mapToolbar').onclick=openMapChooser;$('mapClose').onclick=closeMapChooser;
+ $('mapDialog').addEventListener('close',()=>{mapOpen=false;clearInput();const resume=mapWasPlaying;mapWasPlaying=false;if(resume&&state==='paused')start()});
+ for(const button of document.querySelectorAll('[data-map]'))button.onclick=()=>selectMap(button.dataset.map);
+ $('minimapToggle').onclick=()=>{minimapVisible=!minimapVisible;$('minimap').hidden=!minimapVisible;$('minimapToggle').textContent=minimapVisible?'−':'+';$('minimapToggle').setAttribute('aria-expanded',String(minimapVisible));if(state==='playing')canvas.focus()};
+}
+
+function reset(){dialSpeed=0;seed=activeMap().seed;objects=[];particles=[];debris=[];rings=[];scars=[];skids=[];pickups=[];popups=[];collapseQueue=[];groups=[];grid=new Map();remaining=90;elapsed=0;score=0;dead=0;combo=0;comboTime=0;shake=0;cleared=false;driftSmoke=0;clearInput();
+ const map=activeMap();worldW=map.w;worldH=map.h;cityLots=[];
+ car={modelId:vehicleId,x:map.spawn[0],y:map.spawn[1],a:-Math.PI/2,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0,driftBlend:0};
+ if(mapId==='city')buildCity();else buildYard();
+ total=objects.filter(o=>!o.solid).length;toastTime=0;camera={x:0,y:0};updateCamera(0,true);
+ $('toast').classList.remove('show');$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Пауза');updateHUD();
+}
+function buildYard(){
  wall(108,93,12,2);wall(108,113,2,8);wall(228,113,2,8);wall(108,193,4,2);wall(204,193,4,2);
  wall(503,86,13,2);wall(503,106,2,8);wall(635,106,2,8);wall(551,186,9,2);
  wall(105,304,2,9);wall(129,374,8,2);wall(237,314,2,8);
@@ -385,14 +611,14 @@ function reset(){dialSpeed=0;seed=301;objects=[];particles=[];debris=[];rings=[]
  [[150,137],[178,137],[178,164],[558,130],[581,130],[600,158],[145,340],[175,340],[567,342],[592,342],[357,146],[382,146],[407,146],[370,171],[306,272],[330,272],[444,276],[468,276],[341,63],[365,63]].forEach(([x,y])=>add(x,y,'crate',19,19));
  [[272,130],[470,157],[290,332],[454,358],[529,240],[550,240],[570,240],[175,248],[195,248],[612,285]].forEach(([x,y])=>add(x,y,'barrel',13,17));
  for(let i=0;i<9;i++)add(332+i*13,218,'fence',11,7);
- pickups=[{x:384,y:252},{x:62,y:251},{x:705,y:252}].map(p=>({...p,alive:true}));total=objects.length;toastTime=0;$('toast').classList.remove('show');$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Пауза');updateHUD();
+ pickups=[{x:384,y:252},{x:62,y:251},{x:705,y:252}].map(p=>({...p,alive:true}));
 }
 function noise(freq,duration,volume=.06,type='square'){if(muted)return;try{if(!audio)audio=new AudioContext();if(audio.state==='suspended')audio.resume();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,audio.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(25,freq/4),audio.currentTime+duration);g.gain.setValueAtTime(volume,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+duration)}catch{}}
 function burst(x,y,color,n=10,power=80,smoke=false){for(let i=0;i<n;i++){const a=rand()*Math.PI*2,s=10+rand()*power;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:smoke?.7+rand()*.6:.3+rand()*.6,color,size:smoke?4+rand()*7:2+Math.floor(rand()*4),smoke})}if(particles.length>650)particles.splice(0,particles.length-650)}
 function fragment(x,y,color,n,ix=0,iy=0){for(let i=0;i<n;i++){const a=rand()*Math.PI*2,s=25+rand()*85;debris.push({x,y,z:2+rand()*5,vx:Math.cos(a)*s+ix*.32,vy:Math.sin(a)*s+iy*.32,vz:45+rand()*85,w:3+Math.floor(rand()*5),h:3+Math.floor(rand()*4),a:rand()*6.28,spin:(rand()-.5)*10,life:14+rand()*8,color,cooldown:.25})}if(debris.length>280)debris.splice(0,debris.length-280)}
 function message(s){$('toast').textContent=s;$('toast').classList.add('show');toastTime=2.1}
 function damage(amount){if(immortal()||car.inv>0)return;car.hp=Math.max(0,car.hp-amount);car.inv=.25}
-function destroy(o,explosive=false,ix=0,iy=0){if(!o.alive)return;o.alive=false;dead++;combo++;comboTime=1.8;const points=(o.type==='barrel'?150:o.type==='crate'?60:25)*Math.min(5,1+Math.floor(combo/8));score+=points;saveBest();const cx=o.x+o.w/2,cy=o.y+o.h/2,color=palette[o.type][o.tone%palette[o.type].length];
+function destroy(o,explosive=false,ix=0,iy=0){if(!o.alive||o.solid)return;o.alive=false;dead++;combo++;comboTime=1.8;const points=(o.type==='barrel'?150:o.type==='crate'?60:25)*Math.min(5,1+Math.floor(combo/8));score+=points;saveBest();const cx=o.x+o.w/2,cy=o.y+o.h/2,color=palette[o.type][o.tone%palette[o.type].length];
  fragment(cx,cy,color,o.type==='crate'?6:3,ix,iy);burst(cx,cy,'#b7a078',4,40,true);if(o.type==='crate'||o.type==='barrel')popups.push({x:cx,y:cy,t:1,text:'+'+points});
  if(combo===8)message('КРАСИВО! КОМБО ×2');if(combo===24)message('ДВОР НЕ УЗНАТЬ! КОМБО ×4');
  if(o.group>=0){const g=groups[o.group];g.lost++;if(!g.collapsed&&g.lost/g.members.length>=.34){g.collapsed=true;let delay=.1;for(const other of g.members)if(other.alive){collapseQueue.push({o:other,t:delay});delay+=.025}burst(cx,cy,'#c4ad86',10,50,true)}}
@@ -401,7 +627,7 @@ function destroy(o,explosive=false,ix=0,iy=0){if(!o.alive)return;o.alive=false;d
 function explode(cx,cy){shake=Math.max(shake,9);noise(80,.35,.12,'sawtooth');scars.push({x:cx,y:cy,size:22+rand()*10});rings.push({x:cx,y:cy,t:0});burst(cx,cy,'#ffae48',28,180);burst(cx,cy,'#f5e9a5',12,210);burst(cx,cy,'#5e6250',12,65,true);
  for(const d of debris){const dx=d.x-cx,dy=d.y-cy,r=Math.hypot(dx,dy);if(r<90){const f=(1-r/90)*180;d.vx+=dx/(r||1)*f;d.vy+=dy/(r||1)*f;d.vz+=f*.6}}
  const dx=car.x-cx,dy=car.y-cy,r=Math.hypot(dx,dy);if(r<90){const push=(1-r/90)*220;car.vx+=dx/(r||1)*push;car.vy+=dy/(r||1)*push;damage(11*(1-r/110))}
- for(const o of objects)if(o.alive&&Math.hypot(o.x+o.w/2-cx,o.y+o.h/2-cy)<76)destroy(o,true,(o.x-cx)*3,(o.y-cy)*3);
+ for(const o of nearby(cx,cy,90))if(!o.solid&&o.alive&&Math.hypot(o.x+o.w/2-cx,o.y+o.h/2-cy)<76)destroy(o,true,(o.x-cx)*3,(o.y-cy)*3);
 }
 // Tiny bitmap glyphs keep the instrument pixel-sharp, including offline.
 const instrumentGlyphs={
@@ -570,11 +796,11 @@ function updateInstrumentPanel(){
 }
 function updateHUD(){updateControlDiagnostics();const pct=Math.floor(dead/total*100);$('score').textContent=String(score).padStart(5,'0');$('percent').textContent=mode==='free'?pct+'%':pct+' / 65%';$('destruction').style.width=Math.min(100,pct/(mode==='free'?100:65)*100)+'%';$('hp').textContent=immortal()?'∞':Math.ceil(car.hp)+'%';$('health').style.width=(immortal()?100:car.hp)+'%';$('health').parentElement.classList.toggle('protected',immortal());$('healthLabel').textContent=immortal()?'Урон отключён':'Прочность машинки';$('timeLabel').textContent=mode==='free'?'БЕЗ ТАЙМЕРА':'ОСТАЛОСЬ';const t=Math.ceil(remaining);$('timer').textContent=mode==='free'?'∞':String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');updateSpeedometer();$('driftIndicator').classList.toggle('on',Math.abs(car.slip)>28&&Math.hypot(car.vx,car.vy)>55)}
 function overlay(title,text,button,eyebrow,hint){$('modalTitle').textContent=title;$('modalText').innerHTML=text;$('start').textContent=button;$('eyebrow').textContent=eyebrow;$('modalHint').textContent=hint;$('overlay').classList.remove('hidden')}
-function ready(){state='ready';soundtrack?.setPlaying(false);reset();overlay('Устрой беспорядок.',mode==='free'?'Никакого таймера. Разнеси весь двор.<br>'+(immortal()?'Машинка неуязвима — газуй от души.':'Береги машинку и собирай ремкомплекты.'):'Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.','ЗАВЕСТИ МОТОР →',mode==='free'?'СВОБОДНЫЙ ЗАЕЗД':'ГОНКА НА ВРЕМЯ','WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ / SHIFT — РУЧНИК');$('status').textContent=mode==='free'?'● СВОБОДА. БЕСПОРЯДОК. НИКАКОЙ СПЕШКИ.':'● ДВОР ГОТОВ К РАЗНОСУ'}
-function start(){if(state==='paused'){state='playing';soundtrack?.setPlaying(true);clearInput();$('overlay').classList.add('hidden');$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Пауза');canvas.focus();return}saveBest();reset();state='playing';soundtrack?.setPlaying(true);$('overlay').classList.add('hidden');$('status').textContent=mode==='free'?'● СВОБОДНЫЙ ЗАЕЗД · РАЗНЕСИ ВСЁ ДО ОСНОВАНИЯ':'● ГАЗУЙ. ДВОР САМ СЕБЯ НЕ РАЗНЕСЁТ.';noise(260,.15);canvas.focus()}
+function ready(){state='ready';soundtrack?.setPlaying(false);reset();overlay('Устрой беспорядок.',mode==='free'?'Никакого таймера. Разнеси весь двор.<br>'+(immortal()?'Машинка неуязвима — газуй от души.':'Береги машинку и собирай ремкомплекты.'):'Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.','ЗАВЕСТИ МОТОР →',mode==='free'?'СВОБОДНЫЙ ЗАЕЗД':'ГОНКА НА ВРЕМЯ','WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ / SHIFT — РУЧНИК');if(mapId==='city')overlay('Город ждёт.','Проспекты, дворы, парки и промзона.<br>Выбирай маршрут — времени сколько угодно.','ВЫЕХАТЬ В ГОРОД →','НОВОГРАД · СВОБОДНАЯ ЕЗДА','WASD / СТРЕЛКИ — ЕХАТЬ · ПРОБЕЛ / SHIFT — ДРИФТ');$('status').textContent=mapId==='city'?'● НОВОГРАД ОТКРЫТ. ВЫБИРАЙ СВОЙ МАРШРУТ.':mode==='free'?'● СВОБОДА. БЕСПОРЯДОК. НИКАКОЙ СПЕШКИ.':'● ДВОР ГОТОВ К РАЗНОСУ'}
+function start(){if(state==='paused'){state='playing';soundtrack?.setPlaying(true);clearInput();$('overlay').classList.add('hidden');$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Пауза');canvas.focus();return}saveBest();reset();state='playing';soundtrack?.setPlaying(true);$('overlay').classList.add('hidden');$('status').textContent=mapId==='city'?'● НОВОГРАД · СВОБОДНАЯ ЕЗДА':mode==='free'?'● СВОБОДНЫЙ ЗАЕЗД · РАЗНЕСИ ВСЁ ДО ОСНОВАНИЯ':'● ГАЗУЙ. ДВОР САМ СЕБЯ НЕ РАЗНЕСЁТ.';noise(260,.15);canvas.focus()}
 function restart(){if(state==='paused')state='ready';start()}
 function finish(won){state=won?'won':'lost';soundtrack?.setPlaying(false);clearInput();saveBest();overlay(won?'Вот это разнос!':car.hp<=0?'Мотору нужен отдых.':'Ещё по газам?',`${won?'Двор разобран. Работа выполнена.':car.hp<=0?'Машинка приняла слишком много ударов.':'В этот раз двор оказался крепче.'}<br>${Math.floor(dead/total*100)}% разрушено · ${score.toLocaleString('ru-RU')} очков`,'ЕЩЁ ОДИН ЗАЕЗД →',won?'МИССИЯ ВЫПОЛНЕНА':'ЗАЕЗД ЗАВЕРШЁН','R — НАЧАТЬ ЗАНОВО');$('status').textContent=won?'● ПРОМДВОР УСПЕШНО РАЗОБРАН':'● ВРЕМЯ НА НОВЫЙ ЗАЕЗД';noise(won?660:120,.4,.08)}
-function pause(){if(state==='playing'){state='paused';soundtrack?.setPlaying(false);clearInput();$('pause').textContent='▶';$('pause').setAttribute('aria-label','Продолжить');overlay('Перекур.','Двор никуда не денется.<br>Продолжим, когда будешь готов.','ПРОДОЛЖИТЬ →','ИГРА НА ПАУЗЕ','P / ESC — ПРОДОЛЖИТЬ')}else if(state==='paused')start()}
+function pause(){if(state==='playing'){state='paused';soundtrack?.setPlaying(false);clearInput();$('pause').textContent='▶';$('pause').setAttribute('aria-label','Продолжить');overlay('Перекур.',(mapId==='city'?'Город':'Двор')+' никуда не денется.<br>Продолжим, когда будешь готов.','ПРОДОЛЖИТЬ →','ИГРА НА ПАУЗЕ','P / ESC — ПРОДОЛЖИТЬ')}else if(state==='paused')start()}
 function updateDriving(dt){
  const {up,down,left,right,handbrake}=readControls();
  let fx=Math.cos(car.a),fy=Math.sin(car.a),forward=car.vx*fx+car.vy*fy;
@@ -607,9 +833,21 @@ function updateDriving(dt){
  if(car.hp<40&&!immortal()&&rand()<dt*9)burst(car.x+fx*9,car.y+fy*9,'#727669',1,12,true);
  const steps=Math.max(1,Math.ceil(speed*dt/4));for(let step=0;step<steps;step++){
  car.x+=car.vx*dt/steps;car.y+=car.vy*dt/steps;
- if(car.x<25||car.x>W-25||car.y<25||car.y>H-25){if(car.x<25||car.x>W-25)car.vx*=-.45;if(car.y<25||car.y>H-25)car.vy*=-.45;car.x=clamp(car.x,25,W-25);car.y=clamp(car.y,25,H-25);if(speed>50){damage(4);shake=Math.max(shake,3);burst(car.x,car.y,'#e4cc7b',4,65);noise(100,.07,.03)}}
+ if(car.x<25||car.x>worldW-25||car.y<25||car.y>worldH-25){if(car.x<25||car.x>worldW-25)car.vx*=-.45;if(car.y<25||car.y>worldH-25)car.vy*=-.45;car.x=clamp(car.x,25,worldW-25);car.y=clamp(car.y,25,worldH-25);if(speed>50){damage(4);shake=Math.max(shake,3);burst(car.x,car.y,'#e4cc7b',4,65);noise(100,.07,.03)}}
  for(const o of nearby(car.x,car.y,15)){
  const nx=clamp(car.x,o.x,o.x+o.w),ny=clamp(car.y,o.y,o.y+o.h);let dx=car.x-nx,dy=car.y-ny,d=Math.hypot(dx,dy);if(d>=10)continue;
+ if(o.solid){
+  let ux,uy,push;
+  if(d>.01){ux=dx/d;uy=dy/d;push=10-d+.2}
+  else{
+   const sides=[{n:car.x-o.x,x:-1,y:0},{n:o.x+o.w-car.x,x:1,y:0},{n:car.y-o.y,x:0,y:-1},{n:o.y+o.h-car.y,x:0,y:1}];
+   sides.sort((a,b)=>a.n-b.n);ux=sides[0].x;uy=sides[0].y;push=sides[0].n+10.2;
+  }
+  car.x+=ux*push;car.y+=uy*push;const vn=car.vx*ux+car.vy*uy;
+  if(vn<0){car.vx-=ux*vn*1.35;car.vy-=uy*vn*1.35}
+  if(speed>45&&o.hit<=0){o.hit=.25;damage(4);shake=Math.max(shake,3);burst(nx,ny,'#b8b48a',5,50);noise(95,.09,.04)}
+  continue;
+ }
  const impactSpeed=Math.hypot(car.vx,car.vy),threshold=o.type==='brick'?76:34;
  if(impactSpeed>threshold){const ix=car.vx,iy=car.vy;destroy(o,false,ix,iy);car.vx*=o.type==='brick'?.91:.97;car.vy*=o.type==='brick'?.91:.97;shake=Math.max(shake,2.5);damage(o.type==='brick'?1.7:.6);noise(150+rand()*100,.055,.025)}
  else{if(d<.01){dx=car.x-(o.x+o.w/2);dy=car.y-(o.y+o.h/2);if(Math.abs(dx)>Math.abs(dy)){dx=Math.sign(dx)||1;dy=0}else{dy=Math.sign(dy)||1;dx=0}d=1}const ux=dx/d,uy=dy/d;car.x+=ux*(10-d+.2);car.y+=uy*(10-d+.2);const vn=car.vx*ux+car.vy*uy;if(vn<0){car.vx-=ux*vn*1.3;car.vy-=uy*vn*1.3}if(impactSpeed>32&&o.hit<=0){o.hp-=impactSpeed/110;o.hit=.22;burst(nx,ny,'#c3a875',3,30);if(o.hp<=0)destroy(o,false,car.vx,car.vy)}}
@@ -617,7 +855,7 @@ function updateDriving(dt){
  }
 }
 function updateDebris(dt){for(const d of debris){d.life-=dt;d.cooldown-=dt;d.x+=d.vx*dt;d.y+=d.vy*dt;d.z+=d.vz*dt;d.vz-=310*dt;d.a+=d.spin*dt;if(d.z<0){d.z=0;if(Math.abs(d.vz)>16){d.vz=-d.vz*.32;d.spin*=.6}else d.vz=0;d.vx*=.78;d.vy*=.78}const drag=Math.exp(-(d.z>0?.6:3)*dt);d.vx*=drag;d.vy*=drag;
- if(d.x<20||d.x>W-20){d.x=clamp(d.x,20,W-20);d.vx*=-.5}if(d.y<20||d.y>H-20){d.y=clamp(d.y,20,H-20);d.vy*=-.5}
+ if(d.x<20||d.x>worldW-20){d.x=clamp(d.x,20,worldW-20);d.vx*=-.5}if(d.y<20||d.y>worldH-20){d.y=clamp(d.y,20,worldH-20);d.vy*=-.5}
  const dx=d.x-car.x,dy=d.y-car.y,r=Math.hypot(dx,dy);if(d.z<12&&r<15){const ux=dx/(r||1),uy=dy/(r||1);d.x=car.x+ux*16;d.y=car.y+uy*16;d.vx=car.vx*.7+ux*45;d.vy=car.vy*.7+uy*45;d.vz=Math.max(d.vz,35);d.spin+=2;car.vx*=.997;car.vy*=.997}
  if(d.z<13&&d.cooldown<=0&&Math.hypot(d.vx,d.vy)>70){for(const o of nearby(d.x,d.y,5)){if(d.x>o.x-3&&d.x<o.x+o.w+3&&d.y>o.y-3&&d.y<o.y+o.h+3){const force=Math.hypot(d.vx,d.vy);o.hp-=force/150;if(o.hp<=0||o.type==='barrel'&&force>100)destroy(o,true,d.vx,d.vy);d.vx*=-.35;d.vy*=-.35;d.cooldown=.2;break}}}
  }debris=debris.filter(d=>d.life>0)}
@@ -632,7 +870,7 @@ function update(dt){if(state!=='playing')return;elapsed+=dt;if(mode==='arcade')r
  updateHUD();if(car.hp<=0&&!immortal())finish(false);else if(mode==='arcade'&&dead/total>=.65)finish(true);else if(mode==='arcade'&&remaining<=0)finish(false);else if(mode==='free'&&dead===total&&!cleared){cleared=true;message('ДВОР РАЗОБРАН НА 100%! R — ВЕРНУТЬ ВСЁ НАЗАД');$('status').textContent='● НИЧЕГО НЕ УЦЕЛЕЛО. R — НОВЫЙ ДВОР.';noise(660,.35)}
 }
 
-function ground(){rect(0,0,W,H,'#484e39'); // Sand, concrete and old service roads.
+function ground(){if(mapId==='city'){cityGround();return}rect(0,0,W,H,'#484e39'); // Sand, concrete and old service roads.
  rect(24,24,720,432,'#555a42');rect(274,24,207,432,'#474c3a');rect(24,221,720,82,'#474c3a');
  for(let x=34;x<W-30;x+=45){rect(x,258,21,3,'#6d7050')}for(let y=40;y<H-25;y+=41){rect(377,y,3,17,'#6b6e4e')}
  // Deterministic ground texture, without moving noise.
@@ -646,7 +884,7 @@ function ground(){rect(0,0,W,H,'#484e39'); // Sand, concrete and old service roa
  for(let i=0;i<60;i++){const x=32+(i*137)%702,y=27+(i*197)%426;if(x<80||x>690||y<65||y>423){rect(x,y,3,5,'#75824c');rect(x-3,y+3,3,2,'#687747')}}
  for(const [x,y] of [[62,102],[704,387],[58,394],[706,75]]){rect(x,y,15,22,'#303b2f');for(let j=0;j<4;j++)rect(x+3,y+3+j*5,9,2,'#171f1b')}
 }
-function drawObject(o){const {x,y,w,h,type,tone}=o;rect(x+3,y+4,w,h,'#222b2470');if(type==='brick'){rect(x,y,w-1,h-1,palette.brick[tone]);rect(x+1,y+1,w-3,2,'#d29462');rect(x+1,y+h-3,w-3,2,'#7e4c36');rect(x+w-3,y+2,2,h-5,'#8c4d36')}
+function drawObject(o){if(o.type==='building'){drawBuilding(o);return}if(o.type==='tree'){drawTree(o);return}const {x,y,w,h,type,tone}=o;rect(x+3,y+4,w,h,'#222b2470');if(type==='brick'){rect(x,y,w-1,h-1,palette.brick[tone]);rect(x+1,y+1,w-3,2,'#d29462');rect(x+1,y+h-3,w-3,2,'#7e4c36');rect(x+w-3,y+2,2,h-5,'#8c4d36')}
  else if(type==='crate'){rect(x,y,w,h,'#76552f');rect(x+2,y+2,w-4,h-4,palette.crate[tone]);rect(x+3,y+4,w-6,2,'#d4ac69');rect(x+3,y+h-6,w-6,2,'#8b6637');for(let i=3;i<w-3;i+=3)rect(x+i,y+i,3,3,'#d0a05a');rect(x+1,y+1,3,3,'#e0b276');rect(x+w-4,y+h-4,2,2,'#e0b276')}
  else if(type==='barrel'){rect(x+2,y,w-4,h,'#a74832');rect(x,y+3,w,h-6,'#c15b3c');rect(x+2,y+3,3,h-6,'#e48550');rect(x,y+4,w,2,'#583f33');rect(x,y+h-6,w,2,'#583f33');rect(x+4,y+7,5,3,'#e8bf60');rect(x+4,y+1,4,2,'#e69b61')}
  else{rect(x,y,w,h,'#8d8960');rect(x+1,y+1,w-2,2,'#c2b785');rect(x+3,y+2,2,7,'#696c4d')}
@@ -742,7 +980,7 @@ function selectVehicle(id){
  syncVehicleUI();return true;
 }
 function openGarage(){
- if(garageOpen)return;garageWasPlaying=state==='playing';
+ if(garageOpen||mapOpen)return;garageWasPlaying=state==='playing';
  if(garageWasPlaying)pause();clearInput();garageOpen=true;
  syncVehicleUI();$('garageDialog').showModal();
 }
@@ -759,24 +997,25 @@ function setupGarage(){
  $('garageDialog').addEventListener('close',finishGarageClose);
  for(const button of document.querySelectorAll('[data-vehicle]'))button.onclick=()=>{selectVehicle(button.dataset.vehicle);closeGarage()};
 }
-function draw(t){ctx.imageSmoothingEnabled=false;ctx.save();if(shake>0)ctx.translate(Math.round((Math.random()-.5)*shake),Math.round((Math.random()-.5)*shake));ground();
+function draw(t){ctx.imageSmoothingEnabled=false;ctx.save();ctx.translate(-Math.round(camera.x),-Math.round(camera.y));if(shake>0)ctx.translate(Math.round((Math.random()-.5)*shake),Math.round((Math.random()-.5)*shake));ground();
  for(const s of scars){rect(s.x-s.size/2,s.y-s.size/2,s.size,s.size,'#30382b');rect(s.x-s.size*.35,s.y-s.size*.65,s.size*.7,s.size*1.3,'#343b2d')}
  for(const s of skids){ctx.globalAlpha=Math.min(.5,s.t/12);rect(s.x,s.y,3,3,'#20291f')}ctx.globalAlpha=1;
- for(const o of objects)if(!o.alive){rect(o.x+3,o.y+4,6,3,o.type==='barrel'?'#2b3229':'#766749');rect(o.x+o.w-4,o.y+8,3,3,'#3a3e2e')}
- for(const o of objects)if(o.alive){drawObject(o);if(o.hp<1.1){rect(o.x+3,o.y+2,2,4,'#503d2d');rect(o.x+5,o.y+5,3,2,'#503d2d')}}
- for(const p of pickups)if(p.alive){ctx.globalAlpha=immortal()?.45:1;rect(p.x-10,p.y-8,20,18,'#263d28');rect(p.x-8,p.y-9,16,16,'#8eaf59');rect(p.x-6,p.y-7,12,12,'#bcd77f');rect(p.x-2,p.y-5,4,9,'#355337');rect(p.x-5,p.y-2,10,3,'#355337');if(Math.floor(t/650)%2)rect(p.x-5,p.y-13,10,2,'#e3ecbc')}ctx.globalAlpha=1;
+ const shown=visibleObjects();
+ for(const o of shown)if(!o.alive){rect(o.x+3,o.y+4,6,3,o.type==='barrel'?'#2b3229':'#766749');rect(o.x+o.w-4,o.y+8,3,3,'#3a3e2e')}
+ for(const o of shown)if(o.alive){drawObject(o);if(o.hp<1.1){rect(o.x+3,o.y+2,2,4,'#503d2d');rect(o.x+5,o.y+5,3,2,'#503d2d')}}
+ for(const p of pickups)if(p.alive&&visible(p.x,p.y,20,20)){ctx.globalAlpha=immortal()?.45:1;rect(p.x-10,p.y-8,20,18,'#263d28');rect(p.x-8,p.y-9,16,16,'#8eaf59');rect(p.x-6,p.y-7,12,12,'#bcd77f');rect(p.x-2,p.y-5,4,9,'#355337');rect(p.x-5,p.y-2,10,3,'#355337');if(Math.floor(t/650)%2)rect(p.x-5,p.y-13,10,2,'#e3ecbc')}ctx.globalAlpha=1;
  for(const d of debris)if(d.z<5)drawDebris(d);drawCar();for(const d of debris)if(d.z>=5)drawDebris(d);
  for(const r of rings){const radius=8+r.t*145;ctx.globalAlpha=(1-r.t/.6)*.85;for(let i=0;i<24;i++){const a=i*Math.PI/12;rect(r.x+Math.cos(a)*radius-3,r.y+Math.sin(a)*radius-3,6,6,r.t<.18?'#ffe5a0':'#e78a45')}if(r.t<.12){ctx.globalAlpha=(1-r.t/.12)*.6;rect(r.x-20,r.y-20,40,40,'#fff6cf')}}
  for(const p of particles){ctx.globalAlpha=clamp(p.life*(p.smoke?.45:2),0,1);rect(p.x-p.size/2,p.y-p.size/2,Math.ceil(p.size),Math.ceil(p.size),p.color)}ctx.globalAlpha=1;ctx.font='bold 11px monospace';ctx.textAlign='center';for(const p of popups){ctx.globalAlpha=Math.min(1,p.t*2);ctx.fillStyle='#f4e8b6';ctx.fillText(p.text,p.x,p.y)}ctx.globalAlpha=1;ctx.textAlign='left';ctx.restore();
 }
 function drawDebris(d){ctx.globalAlpha=Math.min(1,d.life/2);rect(d.x-d.w/2+2,d.y-d.h/2+2,d.w,d.h,'#242d2470');ctx.save();ctx.translate(Math.round(d.x),Math.round(d.y-d.z));ctx.rotate(d.a);rect(-d.w/2,-d.h/2,d.w,d.h,d.color);rect(-d.w/2,-d.h/2,d.w,1,'#e4bc7b');ctx.restore();ctx.globalAlpha=1}
-function frame(t){const dt=Math.min(.033,(t-last)/1000||.016);last=t;update(dt);draw(t);drawSpeedometer(dt);requestAnimationFrame(frame)}
-function syncSettings(){for(const b of document.querySelectorAll('[data-mode]')){const active=b.dataset.mode===mode;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))}$('invulnerability').disabled=mode!=='free';$('damageOption').classList.toggle('disabled',mode!=='free');$('modeHelp').textContent=mode==='free'?'Весь двор твой. Без таймера и финиша.':'Разрушь 65% двора за 90 секунд.';$('recordLabel').textContent=mode==='free'?'РЕКОРД СВОБОДНОГО ЗАЕЗДА':'РЕКОРД НА ВРЕМЯ'}
-for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>{if(b.dataset.mode===mode)return;saveBest();mode=b.dataset.mode;loadBest();syncSettings();ready()};
+function frame(t){const dt=Math.min(.033,(t-last)/1000||.016);last=t;update(dt);updateCamera(dt);draw(t);drawSpeedometer(dt);drawMinimap();requestAnimationFrame(frame)}
+function syncSettings(){for(const b of document.querySelectorAll('[data-mode]')){const active=b.dataset.mode===mode;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active));b.disabled=mapId==='city'&&b.dataset.mode==='arcade'}$('invulnerability').disabled=mode!=='free';$('damageOption').classList.toggle('disabled',mode!=='free');$('modeHelp').textContent=mapId==='city'?'Целый город для поездок. Без таймера и финиша.':mode==='free'?'Весь двор твой. Без таймера и финиша.':'Разрушь 65% двора за 90 секунд.';$('recordLabel').textContent=mapId==='city'?'РЕКОРД НОВОГРАДА':mode==='free'?'РЕКОРД СВОБОДНОГО ЗАЕЗДА':'РЕКОРД НА ВРЕМЯ'}
+for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>{if(b.dataset.mode===mode||mapId==='city'&&b.dataset.mode==='arcade')return;saveBest();mode=b.dataset.mode;loadBest();syncSettings();ready()};
 $('invulnerability').onchange=()=>{invulnerable=$('invulnerability').checked;if(immortal())car.hp=100;if(state==='ready')ready();else{updateHUD();canvas.focus()}};
 function nativeInput(target){return target&&(['INPUT','SELECT','TEXTAREA'].includes(target.tagName)||target.isContentEditable)}
 document.addEventListener('keydown',e=>{
- if(garageOpen)return;
+ if(garageOpen||mapOpen)return;
  if(nativeInput(e.target))return;
  // While driving, gameplay keys take priority over a focused toolbar button.
  // Enter still activates the button, and form fields keep native keyboard behavior.
@@ -834,7 +1073,7 @@ $('full').onclick=async()=>{
   }
  }catch{syncFullscreenDisplay();message('ПОЛНЫЙ ЭКРАН НЕДОСТУПЕН В ЭТОМ ОКНЕ')}
 };
-setupGarage();syncMusicButton();loadBest();syncSettings();ready();requestAnimationFrame(frame);
+setupGarage();setupMapChooser();syncMusicButton();loadBest();syncSettings();ready();requestAnimationFrame(frame);
 })();
 
 </script>
