@@ -7,6 +7,9 @@ let dialSpeed=0;
 const W = 768, H = 480, keys = new Set();
 const keyboardKeys = new Set(), pointerKeys = new Map();
 const drivingKeys = new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ShiftLeft','ShiftRight']);
+const FLEET=[{"id":"dvor","name":"Дворняга","kind":"Первый хэтчбек","inspiration":"Та самая оранжевая машинка. Собственный образ.","paint":"#ee773d","shade":"#9e432a","light":"#ffc17a","shape":"hatch","half":7,"length":28,"roof":10},{"id":"kopeika","name":"Копеечка","kind":"Классический седан","inspiration":"Отсылка к ВАЗ-2101: хром, круглая оптика, простой силуэт.","paint":"#e6d09c","shade":"#9c8052","light":"#fff0c4","shape":"classic","half":8,"length":30,"roof":11},{"id":"golf","name":"Гольфстрим II","kind":"Угловатый хэтчбек","inspiration":"Отсылка к Volkswagen Golf II: короткий зад и чёрные бамперы.","paint":"#ce4f40","shade":"#7e302c","light":"#f28b69","shape":"golf","half":8,"length":26,"roof":12},{"id":"bavarian","name":"Баварец E-30","kind":"Спортивный седан","inspiration":"Отсылка к BMW E30: длинный капот и парные фары.","paint":"#6799c6","shade":"#315b83","light":"#b0d3e8","shape":"bavarian","half":8,"length":31,"roof":11},{"id":"meridian","name":"Меридиан 124","kind":"Большой седан","inspiration":"Отсылка к Mercedes-Benz W124: строгий кузов и широкая оптика.","paint":"#b6c3bb","shade":"#697c74","light":"#e8eee0","shape":"meridian","half":9,"length":34,"roof":13},{"id":"niva","name":"Нивушка 4×4","kind":"Короткий внедорожник","inspiration":"Отсылка к классической «Ниве»: широкие колёса и запаска.","paint":"#9caf6a","shade":"#52683c","light":"#d9df9e","shape":"niva","half":9,"length":27,"roof":13},{"id":"tofu","name":"Тофу-86","kind":"Купе из горных серпантинов","inspiration":"Отсылка к Toyota AE86: чёрно-белый кузов и убирающиеся фары.","paint":"#eee9d4","shade":"#8c9589","light":"#fff9e2","shape":"tofu","half":8,"length":30,"roof":10},{"id":"stuttgart","name":"Штутгарт 911","kind":"Округлый спорткар","inspiration":"Отсылка к Porsche 911: широкая корма, круглая оптика и спойлер.","paint":"#e7ba4d","shade":"#9a6b31","light":"#ffe795","shape":"sport","half":9,"length":30,"roof":10}];
+let vehicleId='dvor',garageOpen=false,garageWasPlaying=false;
+try{const saved=localStorage.getItem('crash-vehicle');if(FLEET.some(model=>model.id===saved))vehicleId=saved}catch{}
 const palette = {brick:['#ac6144','#bf7450','#98593e'],crate:['#b78a4c','#c39c60','#a7783d'],barrel:['#b84f38'],fence:['#9f9a70']};
 let objects=[], particles=[], debris=[], rings=[], scars=[], skids=[], pickups=[], popups=[], collapseQueue=[], groups=[], grid=new Map();
 let car, state='ready', mode='free', invulnerable=true, remaining=90, elapsed=0, score=0, dead=0, total=0, shake=0;
@@ -45,7 +48,7 @@ function clearInput(){keyboardKeys.clear();pointerKeys.clear();keys.clear();for(
 function add(x,y,type,w=16,h=16,group=-1){const o={x,y,w,h,type,group,hp:type==='brick'?1.3:1,alive:true,tone:Math.floor(rand()*3),hit:0};objects.push(o);if(group>=0)groups[group].members.push(o);for(let gx=Math.floor(x/32);gx<=Math.floor((x+w)/32);gx++)for(let gy=Math.floor(y/32);gy<=Math.floor((y+h)/32);gy++){const k=gx+','+gy;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(o)}}
 function nearby(x,y,r=15){const found=new Set();for(let gx=Math.floor((x-r)/32);gx<=Math.floor((x+r)/32);gx++)for(let gy=Math.floor((y-r)/32);gy<=Math.floor((y+r)/32);gy++)for(const o of grid.get(gx+','+gy)||[])if(o.alive)found.add(o);return found}
 function reset(){dialSpeed=0;seed=301;objects=[];particles=[];debris=[];rings=[];scars=[];skids=[];pickups=[];popups=[];collapseQueue=[];groups=[];grid=new Map();remaining=90;elapsed=0;score=0;dead=0;combo=0;comboTime=0;shake=0;cleared=false;driftSmoke=0;clearInput();
- car={x:384,y:387,a:-Math.PI/2,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0,driftBlend:0};
+ car={modelId:vehicleId,x:384,y:387,a:-Math.PI/2,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0,driftBlend:0};
  const wall=(x,y,cols,rows)=>{const group=groups.length;groups.push({members:[],lost:0,collapsed:false});for(let j=0;j<rows;j++)for(let i=0;i<cols;i++)add(x+i*12,y+j*10,'brick',12,10,group)};
  wall(108,93,12,2);wall(108,113,2,8);wall(228,113,2,8);wall(108,193,4,2);wall(204,193,4,2);
  wall(503,86,13,2);wall(503,106,2,8);wall(635,106,2,8);wall(551,186,9,2);
@@ -81,15 +84,25 @@ const instrumentGlyphs={
  '8':['111','101','111','101','111'],'9':['111','101','111','001','111'],
  'K':['101','110','100','110','101'],'M':['101','111','111','101','101'],
  'H':['101','101','111','101','101'],'/':['001','001','010','100','100'],
- 'D':['110','101','101','101','110'],'N':['101','111','111','111','101'],
- 'R':['110','101','110','101','101']
+ 'D':['110','101','101','101','110'],'N':['10001','11001','10101','10011','10001'],
+ 'R':['110','101','110','101','101'],
+ 'A':['010','101','111','101','101'],'B':['110','101','110','101','110'],
+ 'C':['111','100','100','100','111'],'E':['111','100','110','100','111'],
+ 'F':['111','100','110','100','100'],'G':['111','100','101','101','111'],
+ 'I':['111','010','010','010','111'],'L':['100','100','100','100','111'],
+ 'O':['111','101','101','101','111'],'P':['110','101','110','100','100'],
+ 'S':['111','100','111','001','111'],'T':['111','010','010','010','010'],
+ 'U':['101','101','101','101','111'],'V':['101','101','101','101','010'],
+ 'Y':['101','101','010','010','010'],':':['000','010','000','010','000'],
+ '-':['000','000','111','000','000'],'%':['101','001','010','100','101'],
+ '∞':['000','000','101','111','101']
 };
 function instrumentText(text,x,y,scale,color){
  speedCtx.fillStyle=color;
  for(const letter of text){
   const glyph=instrumentGlyphs[letter];
-  if(glyph)for(let row=0;row<5;row++)for(let col=0;col<3;col++)if(glyph[row][col]==='1')speedCtx.fillRect(x+col*scale,y+row*scale,scale,scale);
-  x+=4*scale;
+  if(glyph)for(let row=0;row<5;row++)for(let col=0;col<glyph[row].length;col++)if(glyph[row][col]==='1')speedCtx.fillRect(x+col*scale,y+row*scale,scale,scale);
+  x+=((glyph?glyph[0].length:3)+1)*scale;
  }
 }
 function updateSpeedometer(){
@@ -99,30 +112,119 @@ function updateSpeedometer(){
  $('speedDirection').textContent=direction;
  $('speedDirection').setAttribute('aria-label',direction==='R'?'Задний ход':direction==='D'?'Вперёд':'Нейтраль');
 }
+function instrumentLine(x1,y1,x2,y2,color){
+ speedCtx.fillStyle=color;
+ const steps=Math.max(Math.abs(x2-x1),Math.abs(y2-y1));
+ for(let i=0;i<=steps;i++)speedCtx.fillRect(Math.round(x1+(x2-x1)*i/(steps||1)),Math.round(y1+(y2-y1)*i/(steps||1)),1,1);
+}
+function segmentDigit(digit,x,y,color){
+ const segments={0:'abcdef',1:'bc',2:'abged',3:'abgcd',4:'fgbc',5:'afgcd',6:'afgecd',7:'abc',8:'abcdefg',9:'abfgcd'};
+ const rects={a:[4,0,14,3],b:[19,4,3,12],c:[19,21,3,12],d:[4,34,14,3],e:[0,21,3,12],f:[0,4,3,12],g:[4,17,14,3]};
+ for(const [name,[dx,dy,w,h]] of Object.entries(rects)){
+  speedCtx.fillStyle=(segments[digit]||'').includes(name)?color:'#102820';
+  speedCtx.fillRect(x+dx,y+dy,w,h);
+ }
+}
+function instrumentRoundRect(x,y,w,h,r,color){
+ // Rasterize rounded contours on the same low-resolution pixel grid as the dial.
+ speedCtx.fillStyle=color;
+ for(let row=0;row<h;row++){
+  const edge=Math.min(row,h-1-row),dy=Math.max(0,r-edge-1);
+  const inset=dy?Math.ceil(r-Math.sqrt(r*r-dy*dy)):0;
+  speedCtx.fillRect(x+inset,y+row,w-inset*2,1);
+ }
+}
+function instrumentArc(cx,cy,r,start,end,color,size=1){
+ speedCtx.fillStyle=color;
+ for(let degree=start;degree<=end;degree+=2){
+  const angle=degree*Math.PI/180;
+  speedCtx.fillRect(Math.round(cx+Math.sin(angle)*r),Math.round(cy-Math.cos(angle)*r),size,size);
+ }
+}
 function drawSpeedometer(dt){
- const speed=Math.hypot(car.vx,car.vy)*.55;
+ const speed=Math.hypot(car.vx,car.vy)*.55,controls=readControls(),protectedCar=immortal();
  dialSpeed+=(clamp(speed,0,160)-dialSpeed)*(1-Math.exp(-12*dt));
- const cx=42,cy=29,hot=speed>=120,color=hot?'#ff9955':'#c6df78';
- speedCtx.fillStyle='#11190e';speedCtx.fillRect(0,0,160,48);
- for(let value=0;value<=160;value+=5){
-  const a=(-115+value/160*230)*Math.PI/180;
-  speedCtx.fillStyle=value<=dialSpeed?color:value>=125?'#78472f':'#3a4a30';
-  speedCtx.fillRect(Math.round(cx+Math.sin(a)*25)-1,Math.round(cy-Math.cos(a)*25)-1,3,3);
-  if(value%40===0){
-   const label=String(value),x=cx+Math.sin(a)*17-label.length*2+1,y=cy-Math.cos(a)*17-2;
-   instrumentText(label,Math.round(x),Math.round(y),1,'#aaba94');
+ const cyan='#9fffd4',amber='#e6bc72',dim='#6d8066',hot=speed>=120;
+ speedCtx.fillStyle='#070e0c';speedCtx.fillRect(0,0,384,112);
+ // Three softly rounded instrument wells combine the original pods and VFD glass.
+ for(const [x,w] of [[7,114],[128,138],[273,104]]){
+  instrumentRoundRect(x,6,w,86,16,'#49523e');
+  instrumentRoundRect(x+1,7,w-2,84,15,'#0b1711');
+  instrumentRoundRect(x+3,9,w-6,80,13,'#09110d');
+  // Static, fine-grained instrument material: gentle green-black tonal bands.
+  // It is painted before every readout and never flickers or covers the digits.
+  const tones=['#101e18','#0f1d17','#0e1c16','#0d1a15','#0c1914','#0b1813','#0a1712'];
+  for(let y=16;y<82;y++){
+   speedCtx.fillStyle=tones[Math.min(6,Math.floor((y-16)/10))];
+   speedCtx.fillRect(x+10,y,w-20,1);
+  }
+  for(let i=0;i<54;i++){
+   speedCtx.fillStyle=i%3?'#1b2b21':'#223127';
+   speedCtx.fillRect(x+11+(i*37+3)%(w-22),18+(i*19+7)%61,1,1);
   }
  }
- const angle=(-115+dialSpeed/160*230)*Math.PI/180;
- speedCtx.fillStyle='#ff793f';
- for(let r=-3;r<=21;r++)speedCtx.fillRect(Math.round(cx+Math.sin(angle)*r),Math.round(cy-Math.cos(angle)*r),2,2);
- speedCtx.fillStyle='#eee9c9';speedCtx.fillRect(cx-1,cy-1,4,4);
- speedCtx.fillStyle='#63764d';speedCtx.fillRect(83,6,1,36);
- const digits=String(Math.round(speed)).padStart(3,'0'),scale=digits.length>3?3:4;
- instrumentText(digits,96,8,scale,hot?'#ffc18a':'#f2efd8');
- instrumentText('KM/H',107,33,1,'#93a57d');
- speedCtx.fillStyle='#293b20';speedCtx.fillRect(10,34,11,11);
- instrumentText($('speedDirection').textContent,14,37,1,'#c6df78');
+ const cx=63,cy=47;
+ instrumentArc(cx,cy,38,0,360,'#3e4f3a');
+ instrumentArc(cx,cy,36,-120,120,'#263c2c',2);
+ instrumentArc(cx,cy,36,68,120,'#8b5836',2);
+ if(dialSpeed>0)instrumentArc(cx,cy,36,-120,-120+dialSpeed*1.5,hot?'#efbb78':cyan,2);
+ for(let value=0;value<=160;value+=10){
+  const a=(-120+value*1.5)*Math.PI/180,major=value%40===0;
+  instrumentLine(Math.round(cx+Math.sin(a)*32),Math.round(cy-Math.cos(a)*32),Math.round(cx+Math.sin(a)*(major?28:30)),Math.round(cy-Math.cos(a)*(major?28:30)),value>=130?amber:'#a6ba95');
+  if(major){
+   const text=String(value),x=cx+Math.sin(a)*23-text.length*2+1,y=cy-Math.cos(a)*23-2;
+   instrumentText(text,Math.round(x),Math.round(y),1,dim);
+  }
+ }
+ const angle=(-120+dialSpeed*1.5)*Math.PI/180;
+ instrumentLine(Math.round(cx-Math.sin(angle)*5),Math.round(cy+Math.cos(angle)*5),Math.round(cx+Math.sin(angle)*29),Math.round(cy-Math.cos(angle)*29),'#ff995a');
+ speedCtx.fillStyle='#e9c28c';speedCtx.fillRect(cx-2,cy-2,5,5);
+ speedCtx.fillStyle='#543d25';speedCtx.fillRect(cx,cy,1,1);
+ instrumentText('KM/H',56,62,1,amber);
+ // Retain the crisp seven-segment speed display and a slim illuminated speed strip.
+ instrumentText('DIGITAL SPEED',143,12,1,amber);
+ const digits=String(Math.round(speed)).padStart(3,'0');
+ if(digits.length<=3)for(let i=0;i<3;i++)segmentDigit(digits[i],142+i*27,25,hot?'#ffcb85':cyan);
+ else instrumentText(digits,142,32,5,cyan);
+ instrumentText('KM/H',225,55,1,amber);
+ instrumentRoundRect(233,25,23,22,7,'#283c2c');
+ instrumentRoundRect(234,26,21,20,6,'#101f16');
+ const direction=$('speedDirection').textContent;
+ instrumentText(direction,direction==='N'?237:240,29,3,cyan);
+ for(let i=0;i<28;i++){
+  speedCtx.fillStyle=dialSpeed>=(i+1)/28*160?(i>=21?amber:cyan):'#24382a';
+  speedCtx.fillRect(142+i*4,69,3,3);
+ }
+ const seconds=Math.floor(elapsed),time=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+ instrumentText('TIME',143,80,1,dim);instrumentText(time,165,80,1,cyan);
+ instrumentText(mode==='free'?'FREE':'90 S',225,80,1,amber);
+ // Rounded diagnostics pod: actual body condition, protection, and steering.
+ const bodyColor=!protectedCar&&car.hp<30?'#ff875d':cyan;
+ instrumentText('BODY',285,13,1,amber);instrumentText(protectedCar?'INF':Math.ceil(car.hp)+'%',344,13,1,bodyColor);
+ instrumentLine(293,31,329,31,bodyColor);instrumentLine(293,52,329,52,bodyColor);
+ instrumentLine(289,35,289,48,bodyColor);instrumentLine(333,35,333,48,bodyColor);
+ instrumentLine(289,35,293,31,bodyColor);instrumentLine(289,48,293,52,bodyColor);
+ instrumentLine(329,31,333,35,bodyColor);instrumentLine(329,52,333,48,bodyColor);
+ instrumentLine(301,33,301,50,bodyColor);instrumentLine(317,33,321,37,bodyColor);
+ instrumentLine(321,37,321,46,bodyColor);instrumentLine(321,46,317,50,bodyColor);
+ for(const [x,y] of [[294,27],[320,27],[294,54],[320,54]]){speedCtx.fillStyle=dim;speedCtx.fillRect(x,y,8,3)}
+ const health=protectedCar?100:car.hp;
+ for(let i=0;i<10;i++){speedCtx.fillStyle=i<Math.ceil(health/10)?bodyColor:'#283b2c';speedCtx.fillRect(357,61-i*4,10,3)}
+ instrumentText(protectedCar?'PROTECT':'DAMAGE',291,66,1,protectedCar?amber:dim);
+ instrumentText('STEER',285,80,1,dim);
+ instrumentRoundRect(312,79,55,5,2,'#2c422f');
+ speedCtx.fillStyle=cyan;speedCtx.fillRect(Math.round(338+car.steer*24),78,3,7);
+ // Live control lamps sit in a shared, shallow rounded rail.
+ instrumentRoundRect(8,96,368,13,6,'#1e2e21');
+ instrumentRoundRect(9,97,366,11,5,'#0b1510');
+ const lamp=(label,x,on,color)=>{
+  instrumentRoundRect(x,100,4,4,1,on?color:'#293a2c');
+  instrumentText(label,x+8,100,1,on?color:'#6a7d65');
+ };
+ lamp('GAS',16,controls.up,cyan);lamp('BRAKE',66,controls.handbrake,'#ff986a');
+ lamp('SHIELD',131,protectedCar,amber);lamp('DRIFT',203,Math.abs(car.slip)>28&&speed>30,cyan);
+ lamp('REPAIR',266,!protectedCar&&car.hp<30,'#ff875d');
+ instrumentText('01',359,100,1,amber);
 }
 function updateInstrumentPanel(){
  const controls=readControls(),protectedCar=immortal();
@@ -222,10 +324,112 @@ function drawObject(o){const {x,y,w,h,type,tone}=o;rect(x+3,y+4,w,h,'#222b2470')
  else{rect(x,y,w,h,'#8d8960');rect(x+1,y+1,w-2,2,'#c2b785');rect(x+3,y+2,2,7,'#696c4d')}
 }
 
-function drawCar(){ctx.save();ctx.translate(Math.round(car.x),Math.round(car.y));ctx.rotate(car.a+Math.PI/2);
+function drawOriginalCar(){ctx.save();ctx.translate(Math.round(car.x),Math.round(car.y));ctx.rotate(car.a+Math.PI/2);
  rect(-7,-11,18,29,'#1b251b77');ctx.save();ctx.translate(-7,-5);ctx.rotate(car.steer*.42);rect(-2,-4,4,8,'#161d1a');ctx.restore();ctx.save();ctx.translate(7,-5);ctx.rotate(car.steer*.42);rect(-2,-4,4,8,'#161d1a');ctx.restore();rect(-9,7,4,7,'#161d1a');rect(5,7,4,7,'#161d1a');
  const dent=car.hp<70&&!immortal(),wreck=car.hp<35&&!immortal();const paint=car.inv>0&&Math.floor(car.inv*30)%2?'#ffcc8c':'#ee773d';rect(-7,-13,14,28,'#9e432a');rect(-7+(wreck?1:0),-12+(dent?2:0),14-(wreck?2:0),25-(dent?2:0),paint);rect(-5,-13+(dent?2:0),10,2,'#ffc17a');rect(-5,-4,10,10,'#434e43');rect(-4,-3,8,3,'#93b1a0');rect(-4,4,8,3,'#303c35');rect(-4,0,8,4,'#ee874a');rect(-7,-9,2,5,'#ffaf62');rect(-6,10,12,2,'#b95833');rect(-7,-12+(dent?2:0),3,3,'#f5e9aa');if(!wreck)rect(4,-12,3,3,'#f5e9aa');rect(-7,12,3,2,'#ed4634');rect(4,12,3,2,'#ed4634');
  if(dent){rect(-4,-9,5,2,'#8f4b2d');rect(-3,-7,2,3,'#8f4b2d');rect(1,-3,1,3,'#d7e0bf')}if(wreck){rect(0,-9,5,4,'#4a4431');rect(-7,9,3,4,'#8f4b2d')}ctx.save();ctx.rotate(wreck?.22:dent?.1:0);rect(-5,-16+(dent?3:0),10,3,'#b9bb96');ctx.restore();rect(-6,14,12,2,'#53594a');ctx.restore();
+}
+function vehicleModel(){return FLEET.find(model=>model.id===vehicleId)||FLEET[0]}
+function drawVehicleSprite(target,model,steer=0,hp=100,flash=false){
+ const r=(x,y,w,h,color)=>{target.fillStyle=color;target.fillRect(x,y,w,h)};
+ const h=model.half,L=model.length,front=-Math.floor(L/2),rear=front+L;
+ const dent=hp<70,wreck=hp<35,paint=flash?'#ffe0a1':model.paint;
+ // Different silhouettes, wheelbases and glass areas remain legible at game scale.
+ r(-h+2,front+3,h*2+2,L,'#111b1488');
+ const wheelFront=front+7,wheelRear=rear-7,wide=model.shape==='niva'?4:3;
+ for(const side of [-1,1]){
+  target.save();target.translate(side*h,wheelFront);target.rotate(steer*.42);
+  r(-wide/2,-3,wide,6,'#101812');target.restore();
+  r(side*h-wide/2,wheelRear-3,wide,6,'#101812');
+ }
+ if(model.shape==='sport'){
+  // Rounded nose, narrow cabin, broad rear arches and a raised spoiler.
+  r(-h+3,front,h*2-6,L,model.shade);r(-h+1,front+3,h*2-2,L-5,model.shade);
+  r(-h,front+7,h*2,L-11,paint);r(-h+2,front+2,h*2-4,L-3,paint);
+  r(-5,-6,10,15,'#273d34');r(-4,-5,8,4,'#a3c2b3');r(-4,1,8,6,model.light);
+  r(-7,8,14,3,model.shade);r(-9,rear-5,18,2,'#27362d');r(-8,front+3,4,3,'#fff1c4');r(4,front+3,4,3,'#fff1c4');
+ }else{
+  r(-h,front,h*2,L,model.shade);
+  r(-h+(wreck?1:0),front+1+(dent?1:0),h*2-(wreck?2:0),L-2-(dent?1:0),paint);
+  r(-h+2,front+1,h*2-4,2,model.light);
+  let roofTop=model.shape==='niva'||model.shape==='golf'?-7:-5;
+  if(model.shape==='tofu')roofTop=-5;
+  r(-h+2,roofTop,h*2-4,model.roof,'#293c32');
+  r(-h+3,roofTop+1,h*2-6,3,'#99b9ac');
+  r(-h+3,roofTop+5,h*2-6,Math.max(3,model.roof-8),paint);
+  r(-h+3,roofTop+model.roof-3,h*2-6,2,'#758f83');
+  r(-h+1,front+4,1,L-8,model.light);r(h-2,front+5,1,L-9,model.shade);
+  const chrome=model.shape==='classic'||model.shape==='meridian'?'#c5c8ac':'#29372d';
+  r(-h+1,front-1,h*2-2,2,chrome);r(-h+1,rear-1,h*2-2,2,chrome);
+  if(model.shape==='classic'){
+   r(-h+2,front+2,3,3,'#fff1bd');r(h-5,front+2,3,3,'#fff1bd');r(-2,front+2,4,2,'#656d59');r(-5,rear-5,10,1,model.shade);
+  }else if(model.shape==='bavarian'){
+   for(const x of [-7,-3,2,5])r(x,front+2,2,2,'#fbefbe');
+   r(-1,front+1,2,3,'#253b33');r(-6,front+6,12,1,model.shade);r(-7,rear-4,14,2,'#334c57');
+  }else if(model.shape==='meridian'){
+   r(-8,front+2,5,3,'#f7efc6');r(3,front+2,5,3,'#f7efc6');r(-2,front+1,4,4,'#4a5f52');r(-1,front+1,1,4,'#d4dfc8');
+   r(-6,7,12,1,'#e4e7d2');r(-h-1,-1,2,3,paint);r(h-1,-1,2,3,paint);
+  }else if(model.shape==='niva'){
+   r(-8,front+2,4,3,'#fff1bd');r(4,front+2,4,3,'#fff1bd');r(-3,front+2,6,2,'#364833');
+   r(-5,-1,10,7,model.light);r(-4,0,8,5,paint);r(-4,rear-3,8,4,'#1a281b');r(-2,rear-2,4,2,'#78876c');
+  }else if(model.shape==='tofu'){
+   r(-h,front+6,2,L-9,'#293b34');r(h-2,front+6,2,L-9,'#293b34');
+   r(-7,front+2,5,4,'#253a32');r(2,front+2,5,4,'#253a32');r(-6,front+2,3,2,'#fff6cf');r(3,front+2,3,2,'#fff6cf');
+   r(-5,5,10,5,'#68867d');r(-h,rear-4,h*2,2,'#263a32');
+  }else{
+   r(-h+1,front+2,4,2,'#fff0b6');r(h-5,front+2,4,2,'#fff0b6');r(-h+2,rear-5,h*2-4,2,model.shade);
+   if(model.shape==='golf'){r(-6,3,12,5,'#57756a');r(-1,6,6,1,'#b0c3ab');r(-h,rear-2,h*2,3,'#1d2e24')}
+  }
+ }
+ r(-h+1,rear-3,3,2,'#e74b35');r(h-4,rear-3,3,2,'#e74b35');
+ if(dent){r(-4,front+5,5,2,model.shade);r(1,-2,1,4,'#d6dabb')}
+ if(wreck){r(0,front+4,5,4,'#3f4331');r(-h,rear-6,3,4,model.shade)}
+}
+function drawCar(){
+ if(vehicleId==='dvor'){drawOriginalCar();return}
+ ctx.save();ctx.translate(Math.round(car.x),Math.round(car.y));ctx.rotate(car.a+Math.PI/2);
+ drawVehicleSprite(ctx,vehicleModel(),car.steer,immortal()?100:car.hp,car.inv>0&&Math.floor(car.inv*30)%2);
+ ctx.restore();
+}
+function drawVehiclePreview(target,model){
+ const g=target.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,112,64);
+ g.fillStyle='#151e12';g.fillRect(0,0,112,64);g.fillStyle='#35432c';
+ for(const y of [10,53]){g.fillRect(12,y,88,1);g.fillRect(12,y===10?10:49,1,5);g.fillRect(99,y===10?10:49,1,5)}
+ g.fillStyle='#1e2b1b';for(let x=18;x<100;x+=14)g.fillRect(x,31,6,1);
+ g.save();g.translate(56,32);g.rotate(Math.PI/2);g.scale(2,2);drawVehicleSprite(g,model);g.restore();
+}
+function syncVehicleUI(){
+ const model=vehicleModel();$('selectedVehicleName').textContent=model.name;$('selectedVehicleKind').textContent=model.kind;
+ $('garageOpen').setAttribute('aria-label','Открыть гараж. Выбрана '+model.name);
+ for(const button of document.querySelectorAll('[data-vehicle]')){
+  const active=button.dataset.vehicle===vehicleId;button.setAttribute('aria-pressed',String(active));
+  $('vehicleStatus-'+button.dataset.vehicle).textContent=active?'ВЫБРАНА':'ВЫБРАТЬ →';
+ }
+ drawVehiclePreview($('selectedCarPreview'),model);
+}
+function selectVehicle(id){
+ const model=FLEET.find(item=>item.id===id);if(!model)return false;
+ vehicleId=id;if(car)car.modelId=id;
+ try{localStorage.setItem('crash-vehicle',id)}catch{}
+ syncVehicleUI();return true;
+}
+function openGarage(){
+ if(garageOpen)return;garageWasPlaying=state==='playing';
+ if(garageWasPlaying)pause();clearInput();garageOpen=true;
+ syncVehicleUI();$('garageDialog').showModal();
+}
+function closeGarage(){if(garageOpen)$('garageDialog').close()}
+function finishGarageClose(){
+ garageOpen=false;clearInput();
+ const resume=garageWasPlaying;garageWasPlaying=false;
+ if(resume&&state==='paused')start();
+}
+function setupGarage(){
+ for(const model of FLEET)drawVehiclePreview($('garagePreview-'+model.id),model);
+ syncVehicleUI();
+ $('garageOpen').onclick=openGarage;$('garageToolbar').onclick=openGarage;$('garageClose').onclick=closeGarage;
+ $('garageDialog').addEventListener('close',finishGarageClose);
+ for(const button of document.querySelectorAll('[data-vehicle]'))button.onclick=()=>{selectVehicle(button.dataset.vehicle);closeGarage()};
 }
 function draw(t){ctx.imageSmoothingEnabled=false;ctx.save();if(shake>0)ctx.translate(Math.round((Math.random()-.5)*shake),Math.round((Math.random()-.5)*shake));ground();
  for(const s of scars){rect(s.x-s.size/2,s.y-s.size/2,s.size,s.size,'#30382b');rect(s.x-s.size*.35,s.y-s.size*.65,s.size*.7,s.size*1.3,'#343b2d')}
@@ -244,6 +448,7 @@ for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>{if(b.data
 $('invulnerability').onchange=()=>{invulnerable=$('invulnerability').checked;if(immortal())car.hp=100;if(state==='ready')ready();else{updateHUD();canvas.focus()}};
 function nativeInput(target){return target&&(['INPUT','SELECT','TEXTAREA'].includes(target.tagName)||target.isContentEditable)}
 document.addEventListener('keydown',e=>{
+ if(garageOpen)return;
  if(nativeInput(e.target))return;
  // While driving, gameplay keys take priority over a focused toolbar button.
  // Enter still activates the button, and form fields keep native keyboard behavior.
@@ -274,6 +479,32 @@ for(const b of document.querySelectorAll('[data-key]')){
 $('start').onclick=start;$('restart').onclick=restart;$('pause').onclick=pause;
 $('sound').onclick=()=>{muted=!muted;$('sound').textContent='FX';$('sound').classList.toggle('fx-off',muted);$('sound').title=muted?'Включить звук':'Выключить звук';$('sound').setAttribute('aria-label',$('sound').title);$('sound').setAttribute('aria-pressed',String(!muted));if(!muted)noise(440,.12)};
 $('music').onclick=()=>{if(!soundtrack){message('МУЗЫКА НЕДОСТУПНА В ЭТОМ БРАУЗЕРЕ');return}soundtrack.setEnabled(!soundtrack.enabled);syncMusicButton();if(state==='playing')canvas.focus()};
-$('full').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game').requestFullscreen()}catch{message('ПОЛНЫЙ ЭКРАН НЕДОСТУПЕН В ЭТОМ ОКНЕ')}};
-syncMusicButton();loadBest();syncSettings();ready();requestAnimationFrame(frame);
+// Preserve the normal layout; fit one complete display into the fullscreen cabinet.
+function fitFullscreenDisplay(){
+ const game=$('game'),display=$('gameDisplay');
+ if(document.fullscreenElement!==game)return;
+ const margin=game.clientWidth<600?12:32;
+ const width=display.offsetWidth,height=display.offsetHeight;
+ if(!width||!height)return;
+ const scale=Math.max(.05,Math.min((game.clientWidth-margin*2)/width,(game.clientHeight-margin*2)/height));
+ display.style.transform='translate(-50%,-50%) scale('+scale+')';
+}
+function syncFullscreenDisplay(){
+ if(document.fullscreenElement===$('game'))fitFullscreenDisplay();
+ else{const display=$('gameDisplay');display.style.width='';display.style.transform=''}
+}
+window.addEventListener('resize',fitFullscreenDisplay);
+document.addEventListener('fullscreenchange',syncFullscreenDisplay);
+$('full').onclick=async()=>{
+ try{
+  if(document.fullscreenElement)await document.exitFullscreen();
+  else{
+   const display=$('gameDisplay');
+   display.style.width=display.getBoundingClientRect().width+'px';
+   await $('game').requestFullscreen();
+   fitFullscreenDisplay();
+  }
+ }catch{syncFullscreenDisplay();message('ПОЛНЫЙ ЭКРАН НЕДОСТУПЕН В ЭТОМ ОКНЕ')}
+};
+setupGarage();syncMusicButton();loadBest();syncSettings();ready();requestAnimationFrame(frame);
 })();
