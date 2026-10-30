@@ -2,22 +2,50 @@
 (() => {
 const $ = id => document.getElementById(id);
 const canvas = $('canvas'), ctx = canvas.getContext('2d');
+const speedCtx=$('speedDial').getContext('2d');
+let dialSpeed=0;
 const W = 768, H = 480, keys = new Set();
+const keyboardKeys = new Set(), pointerKeys = new Map();
+const drivingKeys = new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ShiftLeft','ShiftRight']);
 const palette = {brick:['#ac6144','#bf7450','#98593e'],crate:['#b78a4c','#c39c60','#a7783d'],barrel:['#b84f38'],fence:['#9f9a70']};
 let objects=[], particles=[], debris=[], rings=[], scars=[], skids=[], pickups=[], popups=[], collapseQueue=[], groups=[], grid=new Map();
 let car, state='ready', mode='free', invulnerable=true, remaining=90, elapsed=0, score=0, dead=0, total=0, shake=0;
 let combo=0, comboTime=0, toastTime=0, last=0, muted=true, audio=null, best=0, seed=301, cleared=false, driftSmoke=0;
+const soundtrack=window.CrashMusic?new window.CrashMusic({onError:()=>{syncMusicButton();message('МУЗЫКА НЕДОСТУПНА В ЭТОМ БРАУЗЕРЕ')}}):null;
+function syncMusicButton(){const enabled=!!soundtrack?.enabled;$('music').setAttribute('aria-pressed',String(enabled));$('music').setAttribute('aria-label',enabled?'Выключить музыку':'Включить музыку');$('music').title=(enabled?'Выключить':'Включить')+' музыку «Ночная смена» · 92 BPM';$('music').classList.toggle('music-on',enabled)}
 function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h)}
+function readControls(){return {
+ up:keys.has('KeyW')||keys.has('ArrowUp'),down:keys.has('KeyS')||keys.has('ArrowDown'),
+ left:keys.has('KeyA')||keys.has('ArrowLeft'),right:keys.has('KeyD')||keys.has('ArrowRight'),
+ handbrake:keys.has('Space')||keys.has('ShiftLeft')||keys.has('ShiftRight')
+}}
+function updateControlDiagnostics(){
+ if(car)updateInstrumentPanel();
+ const controls=readControls();
+ for(const name of ['up','down','left','right','handbrake']){
+  const indicator=$('input-'+name);indicator.classList.toggle('pressed',!!controls[name]);indicator.setAttribute('data-pressed',String(!!controls[name]));
+ }
+ if(!car)return;
+ const forward=car.vx*Math.cos(car.a)+car.vy*Math.sin(car.a),speed=Math.hypot(car.vx,car.vy);
+ $('input-motion').textContent=speed<5?'ХОД: СТОИМ':Math.abs(forward)<12?'ХОД: БОКОМ':forward>0?'ХОД: ВПЕРЁД':'ХОД: НАЗАД';
+ $('input-turn').textContent=Math.abs(car.yaw)<.12?'ВРАЩЕНИЕ: —':car.yaw>0?'ВРАЩЕНИЕ: ↻':'ВРАЩЕНИЕ: ↺';
+}
 function immortal(){return mode==='free' && invulnerable}
 function loadBest(){try{best=Number(localStorage.getItem(mode==='free'?'crash-best-free':'crash-best')||0)}catch{best=0}$('best').textContent=String(best).padStart(5,'0')}
 function saveBest(){if(score<=best)return;best=score;try{localStorage.setItem(mode==='free'?'crash-best-free':'crash-best',String(best))}catch{}$('best').textContent=String(best).padStart(5,'0')}
-function clearInput(){keys.clear();for(const b of document.querySelectorAll('[data-key]'))b.classList.remove('active')}
+function syncKey(code){
+ const pressed=keyboardKeys.has(code)||[...pointerKeys.values()].includes(code);
+ if(pressed)keys.add(code);else keys.delete(code);
+ for(const b of document.querySelectorAll('[data-key]'))if(b.dataset.key===code)b.classList.toggle('active',pressed);
+ updateControlDiagnostics();
+}
+function clearInput(){keyboardKeys.clear();pointerKeys.clear();keys.clear();for(const b of document.querySelectorAll('[data-key]'))b.classList.remove('active');updateControlDiagnostics()}
 function add(x,y,type,w=16,h=16,group=-1){const o={x,y,w,h,type,group,hp:type==='brick'?1.3:1,alive:true,tone:Math.floor(rand()*3),hit:0};objects.push(o);if(group>=0)groups[group].members.push(o);for(let gx=Math.floor(x/32);gx<=Math.floor((x+w)/32);gx++)for(let gy=Math.floor(y/32);gy<=Math.floor((y+h)/32);gy++){const k=gx+','+gy;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(o)}}
 function nearby(x,y,r=15){const found=new Set();for(let gx=Math.floor((x-r)/32);gx<=Math.floor((x+r)/32);gx++)for(let gy=Math.floor((y-r)/32);gy<=Math.floor((y+r)/32);gy++)for(const o of grid.get(gx+','+gy)||[])if(o.alive)found.add(o);return found}
-function reset(){seed=301;objects=[];particles=[];debris=[];rings=[];scars=[];skids=[];pickups=[];popups=[];collapseQueue=[];groups=[];grid=new Map();remaining=90;elapsed=0;score=0;dead=0;combo=0;comboTime=0;shake=0;cleared=false;driftSmoke=0;clearInput();
- car={x:384,y:387,a:-Math.PI/2,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0};
+function reset(){dialSpeed=0;seed=301;objects=[];particles=[];debris=[];rings=[];scars=[];skids=[];pickups=[];popups=[];collapseQueue=[];groups=[];grid=new Map();remaining=90;elapsed=0;score=0;dead=0;combo=0;comboTime=0;shake=0;cleared=false;driftSmoke=0;clearInput();
+ car={x:384,y:387,a:-Math.PI/2,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0,driftBlend:0};
  const wall=(x,y,cols,rows)=>{const group=groups.length;groups.push({members:[],lost:0,collapsed:false});for(let j=0;j<rows;j++)for(let i=0;i<cols;i++)add(x+i*12,y+j*10,'brick',12,10,group)};
  wall(108,93,12,2);wall(108,113,2,8);wall(228,113,2,8);wall(108,193,4,2);wall(204,193,4,2);
  wall(503,86,13,2);wall(503,106,2,8);wall(635,106,2,8);wall(551,186,9,2);
@@ -44,24 +72,105 @@ function explode(cx,cy){shake=Math.max(shake,9);noise(80,.35,.12,'sawtooth');sca
  const dx=car.x-cx,dy=car.y-cy,r=Math.hypot(dx,dy);if(r<90){const push=(1-r/90)*220;car.vx+=dx/(r||1)*push;car.vy+=dy/(r||1)*push;damage(11*(1-r/110))}
  for(const o of objects)if(o.alive&&Math.hypot(o.x+o.w/2-cx,o.y+o.h/2-cy)<76)destroy(o,true,(o.x-cx)*3,(o.y-cy)*3);
 }
-function updateHUD(){const pct=Math.floor(dead/total*100);$('score').textContent=String(score).padStart(5,'0');$('percent').textContent=mode==='free'?pct+'%':pct+' / 65%';$('destruction').style.width=Math.min(100,pct/(mode==='free'?100:65)*100)+'%';$('hp').textContent=immortal()?'∞':Math.ceil(car.hp)+'%';$('health').style.width=(immortal()?100:car.hp)+'%';$('health').parentElement.classList.toggle('protected',immortal());$('healthLabel').textContent=immortal()?'Урон отключён':'Прочность машинки';$('timeLabel').textContent=mode==='free'?'БЕЗ ТАЙМЕРА':'ОСТАЛОСЬ';const t=Math.ceil(remaining);$('timer').textContent=mode==='free'?'∞':String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');$('speed').textContent=Math.round(Math.hypot(car.vx,car.vy)*.55);$('driftIndicator').classList.toggle('on',Math.abs(car.slip)>28&&Math.hypot(car.vx,car.vy)>55)}
+// Tiny bitmap glyphs keep the instrument pixel-sharp, including offline.
+const instrumentGlyphs={
+ '0':['111','101','101','101','111'],'1':['010','110','010','010','111'],
+ '2':['111','001','111','100','111'],'3':['111','001','111','001','111'],
+ '4':['101','101','111','001','001'],'5':['111','100','111','001','111'],
+ '6':['111','100','111','101','111'],'7':['111','001','010','010','010'],
+ '8':['111','101','111','101','111'],'9':['111','101','111','001','111'],
+ 'K':['101','110','100','110','101'],'M':['101','111','111','101','101'],
+ 'H':['101','101','111','101','101'],'/':['001','001','010','100','100'],
+ 'D':['110','101','101','101','110'],'N':['101','111','111','111','101'],
+ 'R':['110','101','110','101','101']
+};
+function instrumentText(text,x,y,scale,color){
+ speedCtx.fillStyle=color;
+ for(const letter of text){
+  const glyph=instrumentGlyphs[letter];
+  if(glyph)for(let row=0;row<5;row++)for(let col=0;col<3;col++)if(glyph[row][col]==='1')speedCtx.fillRect(x+col*scale,y+row*scale,scale,scale);
+  x+=4*scale;
+ }
+}
+function updateSpeedometer(){
+ const speed=Math.hypot(car.vx,car.vy)*.55,forward=car.vx*Math.cos(car.a)+car.vy*Math.sin(car.a);
+ $('speed').textContent=String(Math.round(speed)).padStart(3,'0');
+ const direction=speed<2?'N':forward<-3?'R':forward>3?'D':'N';
+ $('speedDirection').textContent=direction;
+ $('speedDirection').setAttribute('aria-label',direction==='R'?'Задний ход':direction==='D'?'Вперёд':'Нейтраль');
+}
+function drawSpeedometer(dt){
+ const speed=Math.hypot(car.vx,car.vy)*.55;
+ dialSpeed+=(clamp(speed,0,160)-dialSpeed)*(1-Math.exp(-12*dt));
+ const cx=42,cy=29,hot=speed>=120,color=hot?'#ff9955':'#c6df78';
+ speedCtx.fillStyle='#11190e';speedCtx.fillRect(0,0,160,48);
+ for(let value=0;value<=160;value+=5){
+  const a=(-115+value/160*230)*Math.PI/180;
+  speedCtx.fillStyle=value<=dialSpeed?color:value>=125?'#78472f':'#3a4a30';
+  speedCtx.fillRect(Math.round(cx+Math.sin(a)*25)-1,Math.round(cy-Math.cos(a)*25)-1,3,3);
+  if(value%40===0){
+   const label=String(value),x=cx+Math.sin(a)*17-label.length*2+1,y=cy-Math.cos(a)*17-2;
+   instrumentText(label,Math.round(x),Math.round(y),1,'#aaba94');
+  }
+ }
+ const angle=(-115+dialSpeed/160*230)*Math.PI/180;
+ speedCtx.fillStyle='#ff793f';
+ for(let r=-3;r<=21;r++)speedCtx.fillRect(Math.round(cx+Math.sin(angle)*r),Math.round(cy-Math.cos(angle)*r),2,2);
+ speedCtx.fillStyle='#eee9c9';speedCtx.fillRect(cx-1,cy-1,4,4);
+ speedCtx.fillStyle='#63764d';speedCtx.fillRect(83,6,1,36);
+ const digits=String(Math.round(speed)).padStart(3,'0'),scale=digits.length>3?3:4;
+ instrumentText(digits,96,8,scale,hot?'#ffc18a':'#f2efd8');
+ instrumentText('KM/H',107,33,1,'#93a57d');
+ speedCtx.fillStyle='#293b20';speedCtx.fillRect(10,34,11,11);
+ instrumentText($('speedDirection').textContent,14,37,1,'#c6df78');
+}
+function updateInstrumentPanel(){
+ const controls=readControls(),protectedCar=immortal();
+ $('consoleHp').textContent=protectedCar?'∞':Math.ceil(car.hp)+'%';
+ $('consoleHealthBar').style.width=(protectedCar?100:car.hp)+'%';
+ $('consoleProtection').textContent=protectedCar?'ЩИТ ВКЛ.':car.hp<30?'РЕМОНТ':'ЩИТ ВЫКЛ.';
+ $('consoleCondition').classList.toggle('warn',!protectedCar&&car.hp<40);
+ $('consoleCar').classList.toggle('damaged',!protectedCar&&car.hp<60);
+ $('consoleCar').classList.toggle('critical',!protectedCar&&car.hp<30);
+ $('consoleGas').classList.toggle('on',controls.up);
+ $('consoleBrake').classList.toggle('on',controls.handbrake);
+ $('consoleGas').setAttribute('aria-label',controls.up?'Газ нажат':'Газ отпущен');
+ $('consoleBrake').setAttribute('aria-label',controls.handbrake?'Ручник нажат':'Ручник отпущен');
+ $('consoleSteering').style.left=(50+car.steer*40)+'%';
+}
+function updateHUD(){updateControlDiagnostics();const pct=Math.floor(dead/total*100);$('score').textContent=String(score).padStart(5,'0');$('percent').textContent=mode==='free'?pct+'%':pct+' / 65%';$('destruction').style.width=Math.min(100,pct/(mode==='free'?100:65)*100)+'%';$('hp').textContent=immortal()?'∞':Math.ceil(car.hp)+'%';$('health').style.width=(immortal()?100:car.hp)+'%';$('health').parentElement.classList.toggle('protected',immortal());$('healthLabel').textContent=immortal()?'Урон отключён':'Прочность машинки';$('timeLabel').textContent=mode==='free'?'БЕЗ ТАЙМЕРА':'ОСТАЛОСЬ';const t=Math.ceil(remaining);$('timer').textContent=mode==='free'?'∞':String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');updateSpeedometer();$('driftIndicator').classList.toggle('on',Math.abs(car.slip)>28&&Math.hypot(car.vx,car.vy)>55)}
 function overlay(title,text,button,eyebrow,hint){$('modalTitle').textContent=title;$('modalText').innerHTML=text;$('start').textContent=button;$('eyebrow').textContent=eyebrow;$('modalHint').textContent=hint;$('overlay').classList.remove('hidden')}
-function ready(){state='ready';reset();overlay('Устрой беспорядок.',mode==='free'?'Никакого таймера. Разнеси весь двор.<br>'+(immortal()?'Машинка неуязвима — газуй от души.':'Береги машинку и собирай ремкомплекты.'):'Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.','ЗАВЕСТИ МОТОР →',mode==='free'?'СВОБОДНЫЙ ЗАЕЗД':'ГОНКА НА ВРЕМЯ','WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ — РУЧНИК');$('status').textContent=mode==='free'?'● СВОБОДА. БЕСПОРЯДОК. НИКАКОЙ СПЕШКИ.':'● ДВОР ГОТОВ К РАЗНОСУ'}
-function start(){if(state==='paused'){state='playing';clearInput();$('overlay').classList.add('hidden');$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Пауза');canvas.focus();return}saveBest();reset();state='playing';$('overlay').classList.add('hidden');$('status').textContent=mode==='free'?'● СВОБОДНЫЙ ЗАЕЗД · РАЗНЕСИ ВСЁ ДО ОСНОВАНИЯ':'● ГАЗУЙ. ДВОР САМ СЕБЯ НЕ РАЗНЕСЁТ.';noise(260,.15);canvas.focus()}
+function ready(){state='ready';soundtrack?.setPlaying(false);reset();overlay('Устрой беспорядок.',mode==='free'?'Никакого таймера. Разнеси весь двор.<br>'+(immortal()?'Машинка неуязвима — газуй от души.':'Береги машинку и собирай ремкомплекты.'):'Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.','ЗАВЕСТИ МОТОР →',mode==='free'?'СВОБОДНЫЙ ЗАЕЗД':'ГОНКА НА ВРЕМЯ','WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ / SHIFT — РУЧНИК');$('status').textContent=mode==='free'?'● СВОБОДА. БЕСПОРЯДОК. НИКАКОЙ СПЕШКИ.':'● ДВОР ГОТОВ К РАЗНОСУ'}
+function start(){if(state==='paused'){state='playing';soundtrack?.setPlaying(true);clearInput();$('overlay').classList.add('hidden');$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Пауза');canvas.focus();return}saveBest();reset();state='playing';soundtrack?.setPlaying(true);$('overlay').classList.add('hidden');$('status').textContent=mode==='free'?'● СВОБОДНЫЙ ЗАЕЗД · РАЗНЕСИ ВСЁ ДО ОСНОВАНИЯ':'● ГАЗУЙ. ДВОР САМ СЕБЯ НЕ РАЗНЕСЁТ.';noise(260,.15);canvas.focus()}
 function restart(){if(state==='paused')state='ready';start()}
-function finish(won){state=won?'won':'lost';clearInput();saveBest();overlay(won?'Вот это разнос!':car.hp<=0?'Мотору нужен отдых.':'Ещё по газам?',`${won?'Двор разобран. Работа выполнена.':car.hp<=0?'Машинка приняла слишком много ударов.':'В этот раз двор оказался крепче.'}<br>${Math.floor(dead/total*100)}% разрушено · ${score.toLocaleString('ru-RU')} очков`,'ЕЩЁ ОДИН ЗАЕЗД →',won?'МИССИЯ ВЫПОЛНЕНА':'ЗАЕЗД ЗАВЕРШЁН','R — НАЧАТЬ ЗАНОВО');$('status').textContent=won?'● ПРОМДВОР УСПЕШНО РАЗОБРАН':'● ВРЕМЯ НА НОВЫЙ ЗАЕЗД';noise(won?660:120,.4,.08)}
-function pause(){if(state==='playing'){state='paused';clearInput();$('pause').textContent='▶';$('pause').setAttribute('aria-label','Продолжить');overlay('Перекур.','Двор никуда не денется.<br>Продолжим, когда будешь готов.','ПРОДОЛЖИТЬ →','ИГРА НА ПАУЗЕ','P / ESC — ПРОДОЛЖИТЬ')}else if(state==='paused')start()}
+function finish(won){state=won?'won':'lost';soundtrack?.setPlaying(false);clearInput();saveBest();overlay(won?'Вот это разнос!':car.hp<=0?'Мотору нужен отдых.':'Ещё по газам?',`${won?'Двор разобран. Работа выполнена.':car.hp<=0?'Машинка приняла слишком много ударов.':'В этот раз двор оказался крепче.'}<br>${Math.floor(dead/total*100)}% разрушено · ${score.toLocaleString('ru-RU')} очков`,'ЕЩЁ ОДИН ЗАЕЗД →',won?'МИССИЯ ВЫПОЛНЕНА':'ЗАЕЗД ЗАВЕРШЁН','R — НАЧАТЬ ЗАНОВО');$('status').textContent=won?'● ПРОМДВОР УСПЕШНО РАЗОБРАН':'● ВРЕМЯ НА НОВЫЙ ЗАЕЗД';noise(won?660:120,.4,.08)}
+function pause(){if(state==='playing'){state='paused';soundtrack?.setPlaying(false);clearInput();$('pause').textContent='▶';$('pause').setAttribute('aria-label','Продолжить');overlay('Перекур.','Двор никуда не денется.<br>Продолжим, когда будешь готов.','ПРОДОЛЖИТЬ →','ИГРА НА ПАУЗЕ','P / ESC — ПРОДОЛЖИТЬ')}else if(state==='paused')start()}
 function updateDriving(dt){
- const up=keys.has('KeyW')||keys.has('ArrowUp'),down=keys.has('KeyS')||keys.has('ArrowDown'),left=keys.has('KeyA')||keys.has('ArrowLeft'),right=keys.has('KeyD')||keys.has('ArrowRight'),handbrake=keys.has('Space');
+ const {up,down,left,right,handbrake}=readControls();
  let fx=Math.cos(car.a),fy=Math.sin(car.a),forward=car.vx*fx+car.vy*fy;
+ // Engage quickly, then restore traction progressively over about 0.7 seconds.
+ car.driftBlend+=((handbrake?1:0)-car.driftBlend)*(1-Math.exp(-(handbrake?30:4)*dt));
  car.steer+=(((right?1:0)-(left?1:0))-car.steer)*(1-Math.exp(-11*dt));
- const targetYaw=car.steer*(handbrake?3.4:2.55)*clamp(Math.abs(forward)/80,0,1)*(forward<0?-1:1);
- car.yaw+=(targetYaw-car.yaw)*(1-Math.exp(-(handbrake?7:12)*dt));car.a+=car.yaw*dt;
+ const targetYaw=car.steer*(2.55+.85*car.driftBlend)*clamp(Math.abs(forward)/80,0,1)*(forward<0?-1:1);
+ car.yaw+=(targetYaw-car.yaw)*(1-Math.exp(-(12-5*car.driftBlend)*dt));car.a+=car.yaw*dt;
  // Reproject the existing world velocity after steering: heading and travel direction stay independent.
  fx=Math.cos(car.a);fy=Math.sin(car.a);forward=car.vx*fx+car.vy*fy;let lateral=-car.vx*fy+car.vy*fx;
- forward+=(up?265:0)*dt-(down?(forward>0?360:175):0)*dt;
- forward*=Math.exp(-(handbrake?.85:up||down?.3:.65)*dt);forward=clamp(forward,-105,245);
- lateral*=Math.exp(-(handbrake?1.15:10.5)*dt);car.slip=lateral;
+ const acceleration=(up?265:0)-(down?(forward>0?360:175):0);
+ // Motor limits cap added acceleration, not momentum already carried by the car.
+ forward=clamp(forward+acceleration*dt,Math.min(-105,forward),Math.max(245,forward));
+ const normalDrag=up||down?.3:.65;
+ forward*=Math.exp(-(normalDrag+(.85-normalDrag)*car.driftBlend)*dt);
+ const sideBeforeGrip=lateral;
+ const grip=1.15+9.35*(1-car.driftBlend)**2;
+ lateral*=Math.exp(-grip*dt);
+ // During exit, redirect most of the fading sideways momentum into travel
+ // along the car. This preserves the flow without adding kinetic energy.
+ if(!handbrake&&car.driftBlend>0){
+  const carriedEnergy=(sideBeforeGrip**2-lateral**2)*.92*clamp(car.driftBlend*4,0,1);
+  const direction=Math.sign(forward)||(down&&!up?-1:1);
+  forward=direction*Math.sqrt(forward**2+Math.max(0,carriedEnergy));
+ }
+ car.slip=lateral;
  car.vx=fx*forward-fy*lateral;car.vy=fy*forward+fx*lateral;
  const speed=Math.hypot(car.vx,car.vy);driftSmoke-=dt;
  if((Math.abs(lateral)>22||handbrake)&&speed>55){skids.push({x:car.x-fx*8-fy*6,y:car.y-fy*8+fx*6,t:18},{x:car.x-fx*8+fy*6,y:car.y-fy*8-fx*6,t:18});if(driftSmoke<=0){driftSmoke=.065;burst(car.x-fx*11,car.y-fy*11,'#adb09a',2,15,true)}}
@@ -129,15 +238,42 @@ function draw(t){ctx.imageSmoothingEnabled=false;ctx.save();if(shake>0)ctx.trans
  for(const p of particles){ctx.globalAlpha=clamp(p.life*(p.smoke?.45:2),0,1);rect(p.x-p.size/2,p.y-p.size/2,Math.ceil(p.size),Math.ceil(p.size),p.color)}ctx.globalAlpha=1;ctx.font='bold 11px monospace';ctx.textAlign='center';for(const p of popups){ctx.globalAlpha=Math.min(1,p.t*2);ctx.fillStyle='#f4e8b6';ctx.fillText(p.text,p.x,p.y)}ctx.globalAlpha=1;ctx.textAlign='left';ctx.restore();
 }
 function drawDebris(d){ctx.globalAlpha=Math.min(1,d.life/2);rect(d.x-d.w/2+2,d.y-d.h/2+2,d.w,d.h,'#242d2470');ctx.save();ctx.translate(Math.round(d.x),Math.round(d.y-d.z));ctx.rotate(d.a);rect(-d.w/2,-d.h/2,d.w,d.h,d.color);rect(-d.w/2,-d.h/2,d.w,1,'#e4bc7b');ctx.restore();ctx.globalAlpha=1}
-function frame(t){const dt=Math.min(.033,(t-last)/1000||.016);last=t;update(dt);draw(t);requestAnimationFrame(frame)}
+function frame(t){const dt=Math.min(.033,(t-last)/1000||.016);last=t;update(dt);draw(t);drawSpeedometer(dt);requestAnimationFrame(frame)}
 function syncSettings(){for(const b of document.querySelectorAll('[data-mode]')){const active=b.dataset.mode===mode;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))}$('invulnerability').disabled=mode!=='free';$('damageOption').classList.toggle('disabled',mode!=='free');$('modeHelp').textContent=mode==='free'?'Весь двор твой. Без таймера и финиша.':'Разрушь 65% двора за 90 секунд.';$('recordLabel').textContent=mode==='free'?'РЕКОРД СВОБОДНОГО ЗАЕЗДА':'РЕКОРД НА ВРЕМЯ'}
 for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>{if(b.dataset.mode===mode)return;saveBest();mode=b.dataset.mode;loadBest();syncSettings();ready()};
 $('invulnerability').onchange=()=>{invulnerable=$('invulnerability').checked;if(immortal())car.hp=100;if(state==='ready')ready();else{updateHUD();canvas.focus()}};
-document.addEventListener('keydown',e=>{const control=e.target&&['BUTTON','INPUT'].includes(e.target.tagName);if(e.code==='Space'&&control)return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();if(e.repeat){if(state==='playing')keys.add(e.code);return}if(e.code==='KeyR'){restart();return}if(e.code==='KeyP'||e.code==='Escape'){pause();return}if(e.code==='Enter'&&control)return;if((e.code==='Enter'||e.code==='Space')&&state!=='playing'){e.preventDefault();start();return}if(state==='playing')keys.add(e.code)});document.addEventListener('keyup',e=>keys.delete(e.code));
+function nativeInput(target){return target&&(['INPUT','SELECT','TEXTAREA'].includes(target.tagName)||target.isContentEditable)}
+document.addEventListener('keydown',e=>{
+ if(nativeInput(e.target))return;
+ // While driving, gameplay keys take priority over a focused toolbar button.
+ // Enter still activates the button, and form fields keep native keyboard behavior.
+ if(state==='playing'&&drivingKeys.has(e.code)){
+  e.preventDefault();keyboardKeys.add(e.code);syncKey(e.code);return;
+ }
+ if(e.repeat)return;
+ if(e.code==='KeyR'){e.preventDefault();restart();return}
+ if(e.code==='KeyP'||e.code==='Escape'){e.preventDefault();pause();return}
+ if(e.target&&e.target.tagName==='BUTTON'&&(e.code==='Enter'||e.code==='Space'))return;
+ if((e.code==='Enter'||e.code==='Space')&&state!=='playing'){e.preventDefault();start()}
+});
+document.addEventListener('keyup',e=>{
+ if(state==='playing'&&drivingKeys.has(e.code)&&!nativeInput(e.target))e.preventDefault();
+ keyboardKeys.delete(e.code);syncKey(e.code);
+});
 window.addEventListener('blur',()=>{clearInput();if(state==='playing')pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing')pause()});
-for(const b of document.querySelectorAll('[data-key]')){b.addEventListener('pointerdown',e=>{e.preventDefault();if(state!=='playing')return;b.setPointerCapture(e.pointerId);keys.add(b.dataset.key);b.classList.add('active')});for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>{keys.delete(b.dataset.key);b.classList.remove('active')})}
+for(const b of document.querySelectorAll('[data-key]')){
+ b.addEventListener('pointerdown',e=>{
+  e.preventDefault();if(state!=='playing'||e.button!==0)return;
+  b.setPointerCapture(e.pointerId);pointerKeys.set(e.pointerId,b.dataset.key);syncKey(b.dataset.key);
+ });
+ for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,e=>{
+  const code=pointerKeys.get(e.pointerId);if(!code)return;
+  pointerKeys.delete(e.pointerId);syncKey(code);
+ });
+}
 $('start').onclick=start;$('restart').onclick=restart;$('pause').onclick=pause;
-$('sound').onclick=()=>{muted=!muted;$('sound').textContent=muted?'♪̸':'♪';$('sound').title=muted?'Включить звук':'Выключить звук';$('sound').setAttribute('aria-label',$('sound').title);$('sound').setAttribute('aria-pressed',String(!muted));if(!muted)noise(440,.12)};
+$('sound').onclick=()=>{muted=!muted;$('sound').textContent='FX';$('sound').classList.toggle('fx-off',muted);$('sound').title=muted?'Включить звук':'Выключить звук';$('sound').setAttribute('aria-label',$('sound').title);$('sound').setAttribute('aria-pressed',String(!muted));if(!muted)noise(440,.12)};
+$('music').onclick=()=>{if(!soundtrack){message('МУЗЫКА НЕДОСТУПНА В ЭТОМ БРАУЗЕРЕ');return}soundtrack.setEnabled(!soundtrack.enabled);syncMusicButton();if(state==='playing')canvas.focus()};
 $('full').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game').requestFullscreen()}catch{message('ПОЛНЫЙ ЭКРАН НЕДОСТУПЕН В ЭТОМ ОКНЕ')}};
-loadBest();syncSettings();ready();requestAnimationFrame(frame);
+syncMusicButton();loadBest();syncSettings();ready();requestAnimationFrame(frame);
 })();

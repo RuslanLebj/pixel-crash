@@ -5,20 +5,87 @@
 <meta name="theme-color" content="#151714"><title>КРАШ! — пиксельная авторазборка</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&family=Press+Start+2P&display=swap');
-:root{--bg:#151714;--panel:#1f221e;--line:#363a31;--muted:#969c8c;--cream:#f2efd8;--orange:#ff793f;--green:#c6df78}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--cream);font-family:'Golos Text',Arial,sans-serif}button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid var(--green);outline-offset:4px}button:hover{filter:brightness(1.15)}.shell{max-width:1392px;padding:30px 46px 24px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:22px}.brand{display:flex;align-items:center;gap:14px}.brand-icon{width:42px;height:42px;background:var(--orange);color:#151714;display:grid;place-items:center;font-size:28px;font-weight:900;box-shadow:4px 4px 0 #803c24}.brand-name{font-weight:900;font-size:24px;letter-spacing:-1px}.brand-sub{font-family:monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px}.header-right{font-size:11px;letter-spacing:1px;color:var(--muted);display:flex;gap:10px;align-items:center}.dot{width:6px;height:6px;background:var(--green);display:inline-block}.intro{margin:30px 0 26px;display:flex;align-items:end;justify-content:space-between;gap:20px}h1{font-weight:900;font-size:clamp(30px,3.7vw,49px);letter-spacing:-2px;margin:0 0 9px;line-height:1.05}h1 span{color:var(--orange)}.intro p{font-size:13px;color:var(--muted);margin:0;line-height:1.7}.tag{font:10px monospace;color:var(--green);border:1px solid #586344;padding:8px 10px;white-space:nowrap}.layout{display:grid;grid-template-columns:minmax(0,1fr) 245px;gap:18px}.game{border:1px solid #4a4e40;background:#282d25;min-width:0;position:relative}.game-toolbar{height:47px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#242720;border-bottom:1px solid #414738}.map-label{font:11px monospace;letter-spacing:1px;color:#c8ceb8}.map-label span{color:#727b64;margin-right:9px}.tools{display:flex;gap:8px}.icon-btn{color:#cbd1bd;background:transparent;border:1px solid #4c5143;width:28px;height:27px;display:grid;place-items:center;font-size:14px}.stage{position:relative;aspect-ratio:8/5;overflow:hidden;background:#33392c}canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-action:none}.overlay{position:absolute;inset:0;background:#18201688;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(1px)}.overlay.hidden{display:none}.modal{width:330px;text-align:center;background:#1c211bed;border:1px solid #5c6451;box-shadow:8px 8px 0 #10150d80;padding:26px 22px}.mini-car{font:26px monospace;color:var(--orange);letter-spacing:-7px;margin:0 7px 16px 0}.eyebrow{font:9px monospace;letter-spacing:3px;color:var(--green);margin-bottom:13px}.modal h2{font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 12px}.modal p{font-size:12px;color:#b1baa4;line-height:1.8;margin:0 0 20px}.primary{background:var(--orange);border:0;color:#202219;font-weight:800;font-size:13px;padding:13px 24px;box-shadow:0 4px 0 #a94b25;min-width:180px}.modal small{display:block;color:#7d8872;font:9px monospace;margin-top:18px}.game-footer{height:40px;background:#242720;display:flex;align-items:center;justify-content:space-between;padding:0 15px;color:#9ca68c;font:10px monospace;border-top:1px solid #414738}.live{color:var(--green)}aside{display:flex;flex-direction:column;gap:12px}.card{background:var(--panel);border:1px solid var(--line);padding:18px}.card-title{font:10px monospace;color:var(--muted);letter-spacing:1.5px}.score{font:34px 'Press Start 2P',monospace;letter-spacing:-2px;margin:15px 0 10px;color:var(--cream)}.record{font-size:10px;color:#818a76}.record b{color:#b4bda7;font-weight:500}.stats-row{display:flex;justify-content:space-between;align-items:center;margin-top:18px}.timer{font:23px monospace;color:var(--orange)}.label-small{font:9px monospace;color:var(--muted);letter-spacing:.5px}.bar{height:8px;background:#343a2e;margin-top:9px;display:flex}.bar i{height:100%;background:var(--green);width:0;transition:width .15s}.bar.health i{background:var(--orange);width:100%}.progress-label{display:flex;justify-content:space-between;font-size:10px;margin-top:19px;color:#abb59a}.progress-label b{color:var(--green);font-family:monospace}.target-note{font-size:10px;line-height:1.6;color:#7f8a72;margin:10px 0 0}.controls{padding:16px 18px;flex:1}.control-row{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#b6bda9;margin-top:12px}.keys{display:flex;gap:3px}kbd{background:#2b3027;border:1px solid #505645;box-shadow:0 2px 0 #10140e;padding:3px 5px;min-width:20px;text-align:center;font:10px monospace;color:#e0e4cd}.tip{border-left:2px solid var(--orange);padding:2px 0 2px 10px;font-size:10px;line-height:1.7;color:#979f8b;margin:18px 0 0}.bottom{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:25px;padding-bottom:22px;border-bottom:1px solid var(--line)}.detail{display:flex;gap:12px;align-items:center}.detail-icon{font:20px monospace;color:var(--orange);width:28px}.detail h3{font-size:11px;font-weight:600;margin:0 0 5px}.detail p{font-size:10px;color:#848e77;margin:0;line-height:1.5}footer{display:flex;justify-content:space-between;margin-top:18px;color:#626c58;font:9px monospace;letter-spacing:1px}.touch{display:none;justify-content:space-between;gap:10px;margin-top:13px}.touch-group{display:flex;gap:7px}.touch button{border:1px solid #505a43;background:#2b3424;color:#e1e8cf;padding:14px 17px;touch-action:none;user-select:none}.touch button.active{background:var(--orange);color:#111}.speed{position:absolute;bottom:13px;right:15px;text-align:right;pointer-events:none;background:#171e158c;padding:7px 10px}.speed strong{font:22px monospace;color:#dde5cb}.speed small{font:8px monospace;color:#a9b69a;margin-left:5px}.toast{position:absolute;top:16px;left:50%;transform:translateX(-50%);font:bold 12px monospace;color:#f5f1c8;text-shadow:2px 2px #111;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .15s}.toast.show{opacity:1}@media(min-width:1450px){.shell{padding-top:44px}.intro{margin-top:42px;margin-bottom:32px}}@media(max-width:1000px){.shell{padding:22px}.layout{grid-template-columns:minmax(0,1fr) 210px}.card{padding:15px}.score{font-size:28px}.intro h1{letter-spacing:-1px}}@media(max-width:740px){.shell{padding:18px 14px}.header-right{font-size:8px}.brand-name{font-size:20px}.brand-sub{font-size:8px}.intro{margin:25px 0 20px}.tag{display:none}.layout{display:flex;flex-direction:column}.stage{aspect-ratio:8/5}.modal{padding:17px;width:280px}.modal h2{font-size:24px}.modal p{margin-bottom:12px}.eyebrow{margin-bottom:8px}.mini-car{display:none}.modal small{margin-top:12px}aside{display:grid;grid-template-columns:1fr 1fr}.controls{display:none}.score{font-size:24px;margin:12px 0}.card{padding:14px}.stats-row{margin-top:10px}.progress-label{margin-top:12px}.bottom{gap:15px;margin-top:20px}.detail{gap:6px}.detail p{font-size:9px}.detail h3{font-size:10px}.detail-icon{display:none}.touch{display:flex}.game-footer{font-size:8px;padding:0 10px}.intro p{font-size:11px}footer{font-size:8px}.speed{bottom:8px;right:8px;padding:3px 6px}.speed strong{font-size:16px}}@media(pointer:coarse){.touch{display:flex}}body:fullscreen .shell{max-width:1500px} .game:fullscreen{display:flex;flex-direction:column;justify-content:center;background:#151714}.game:fullscreen .stage{max-height:90vh;width:auto;aspect-ratio:8/5;margin:auto}.game:fullscreen canvas{height:100%;width:100%}.game:fullscreen .game-toolbar,.game:fullscreen .game-footer{flex-shrink:0}
+:root{--bg:#151714;--panel:#1f221e;--line:#363a31;--muted:#969c8c;--cream:#f2efd8;--orange:#ff793f;--green:#c6df78}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--cream);font-family:'Golos Text',Arial,sans-serif}button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid var(--green);outline-offset:4px}button:hover{filter:brightness(1.15)}.shell{max-width:1392px;padding:30px 46px 24px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:22px}.brand{display:flex;align-items:center;gap:14px}.brand-icon{width:42px;height:42px;background:var(--orange);color:#151714;display:grid;place-items:center;font-size:28px;font-weight:900;box-shadow:4px 4px 0 #803c24}.brand-name{font-weight:900;font-size:24px;letter-spacing:-1px}.brand-sub{font-family:monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px}.header-right{font-size:11px;letter-spacing:1px;color:var(--muted);display:flex;gap:10px;align-items:center}.dot{width:6px;height:6px;background:var(--green);display:inline-block}.intro{margin:30px 0 26px;display:flex;align-items:end;justify-content:space-between;gap:20px}h1{font-weight:900;font-size:clamp(30px,3.7vw,49px);letter-spacing:-2px;margin:0 0 9px;line-height:1.05}h1 span{color:var(--orange)}.intro p{font-size:13px;color:var(--muted);margin:0;line-height:1.7}.tag{font:10px monospace;color:var(--green);border:1px solid #586344;padding:8px 10px;white-space:nowrap}.layout{display:grid;grid-template-columns:minmax(0,1fr) 245px;gap:18px}.game{border:1px solid #4a4e40;background:#282d25;min-width:0;position:relative}.game-toolbar{height:47px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#242720;border-bottom:1px solid #414738}.map-label{font:11px monospace;letter-spacing:1px;color:#c8ceb8}.map-label span{color:#727b64;margin-right:9px}.tools{display:flex;gap:8px}.icon-btn{color:#cbd1bd;background:transparent;border:1px solid #4c5143;width:28px;height:27px;display:grid;place-items:center;font-size:14px}.stage{position:relative;aspect-ratio:8/5;overflow:hidden;background:#33392c}canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-action:none}.overlay{position:absolute;inset:0;background:#18201688;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(1px)}.overlay.hidden{display:none}.modal{width:330px;text-align:center;background:#1c211bed;border:1px solid #5c6451;box-shadow:8px 8px 0 #10150d80;padding:26px 22px}.mini-car{font:26px monospace;color:var(--orange);letter-spacing:-7px;margin:0 7px 16px 0}.eyebrow{font:9px monospace;letter-spacing:3px;color:var(--green);margin-bottom:13px}.modal h2{font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 12px}.modal p{font-size:12px;color:#b1baa4;line-height:1.8;margin:0 0 20px}.primary{background:var(--orange);border:0;color:#202219;font-weight:800;font-size:13px;padding:13px 24px;box-shadow:0 4px 0 #a94b25;min-width:180px}.modal small{display:block;color:#7d8872;font:9px monospace;margin-top:18px}.game-footer{height:40px;background:#242720;display:flex;align-items:center;justify-content:space-between;padding:0 15px;color:#9ca68c;font:10px monospace;border-top:1px solid #414738}.live{color:var(--green)}aside{display:flex;flex-direction:column;gap:12px}.card{background:var(--panel);border:1px solid var(--line);padding:18px}.card-title{font:10px monospace;color:var(--muted);letter-spacing:1.5px}.score{font:34px 'Press Start 2P',monospace;letter-spacing:-2px;margin:15px 0 10px;color:var(--cream)}.record{font-size:10px;color:#818a76}.record b{color:#b4bda7;font-weight:500}.stats-row{display:flex;justify-content:space-between;align-items:center;margin-top:18px}.timer{font:23px monospace;color:var(--orange)}.label-small{font:9px monospace;color:var(--muted);letter-spacing:.5px}.bar{height:8px;background:#343a2e;margin-top:9px;display:flex}.bar i{height:100%;background:var(--green);width:0;transition:width .15s}.bar.health i{background:var(--orange);width:100%}.progress-label{display:flex;justify-content:space-between;font-size:10px;margin-top:19px;color:#abb59a}.progress-label b{color:var(--green);font-family:monospace}.target-note{font-size:10px;line-height:1.6;color:#7f8a72;margin:10px 0 0}.controls{padding:16px 18px;flex:1}.control-row{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#b6bda9;margin-top:12px}.keys{display:flex;gap:3px}kbd{background:#2b3027;border:1px solid #505645;box-shadow:0 2px 0 #10140e;padding:3px 5px;min-width:20px;text-align:center;font:10px monospace;color:#e0e4cd}.tip{border-left:2px solid var(--orange);padding:2px 0 2px 10px;font-size:10px;line-height:1.7;color:#979f8b;margin:18px 0 0}.bottom{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:25px;padding-bottom:22px;border-bottom:1px solid var(--line)}.detail{display:flex;gap:12px;align-items:center}.detail-icon{font:20px monospace;color:var(--orange);width:28px}.detail h3{font-size:11px;font-weight:600;margin:0 0 5px}.detail p{font-size:10px;color:#848e77;margin:0;line-height:1.5}footer{display:flex;justify-content:space-between;margin-top:18px;color:#626c58;font:9px monospace;letter-spacing:1px}.touch{display:none;justify-content:space-between;gap:10px;margin-top:13px}.touch-group{display:flex;gap:7px}.touch button{border:1px solid #505a43;background:#2b3424;color:#e1e8cf;padding:14px 17px;touch-action:none;user-select:none}.touch button.active{background:var(--orange);color:#111}.toast{position:absolute;top:16px;left:50%;transform:translateX(-50%);font:bold 12px monospace;color:#f5f1c8;text-shadow:2px 2px #111;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .15s}.toast.show{opacity:1}@media(min-width:1450px){.shell{padding-top:44px}.intro{margin-top:42px;margin-bottom:32px}}@media(max-width:1000px){.shell{padding:22px}.layout{grid-template-columns:minmax(0,1fr) 210px}.card{padding:15px}.score{font-size:28px}.intro h1{letter-spacing:-1px}}@media(max-width:740px){.shell{padding:18px 14px}.header-right{font-size:8px}.brand-name{font-size:20px}.brand-sub{font-size:8px}.intro{margin:25px 0 20px}.tag{display:none}.layout{display:flex;flex-direction:column}.stage{aspect-ratio:8/5}.modal{padding:17px;width:280px}.modal h2{font-size:24px}.modal p{margin-bottom:12px}.eyebrow{margin-bottom:8px}.mini-car{display:none}.modal small{margin-top:12px}aside{display:grid;grid-template-columns:1fr 1fr}.controls{display:none}.score{font-size:24px;margin:12px 0}.card{padding:14px}.stats-row{margin-top:10px}.progress-label{margin-top:12px}.bottom{gap:15px;margin-top:20px}.detail{gap:6px}.detail p{font-size:9px}.detail h3{font-size:10px}.detail-icon{display:none}.touch{display:flex}.game-footer{font-size:8px;padding:0 10px}.intro p{font-size:11px}footer{font-size:8px}}@media(pointer:coarse){.touch{display:flex}}body:fullscreen .shell{max-width:1500px} .game:fullscreen{display:flex;flex-direction:column;justify-content:center;background:#151714}.game:fullscreen .stage{max-height:90vh;width:auto;aspect-ratio:8/5;margin:auto}.game:fullscreen canvas{height:100%;width:100%}.game:fullscreen .game-toolbar,.game:fullscreen .game-footer{flex-shrink:0}
 
 .mode-settings{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:-5px 0 18px}.mode-switch{display:flex;padding:4px;border:1px solid var(--line);background:#1e241b;gap:3px}.mode-switch button{border:0;color:#a4ae96;background:transparent;padding:10px 15px;font-size:11px;font-weight:700}.mode-switch button.selected{color:#172017;background:var(--green);box-shadow:0 2px 0 #718d46}.damage-option{display:flex;align-items:center;gap:8px;font-size:11px;color:#c5d1b4;cursor:pointer}.damage-option input{width:16px;height:16px;accent-color:var(--green);cursor:pointer}.damage-option.disabled{opacity:.4;cursor:default}.mode-help{font-size:10px;color:#8a967c;margin-left:auto}.drift-indicator{position:absolute;bottom:17px;left:16px;font:bold 11px monospace;color:#ffbe70;opacity:0;transition:opacity .15s;pointer-events:none;background:#172015a0;padding:5px 8px}.drift-indicator.on{opacity:1}.bar.protected i{background:var(--green)}canvas:focus{outline:none}.record{line-height:1.7}.record b{white-space:nowrap}@media(max-width:740px){.mode-settings{gap:10px;margin:0 0 14px}.mode-switch button{padding:8px 10px;font-size:10px}.damage-option{font-size:10px}.mode-help{margin-left:0;width:100%;font-size:10px}.game-footer{gap:6px}.game-footer span:last-child{font-size:7px}.touch{gap:5px}.touch-group{gap:5px}.touch button{padding:13px 12px}.drift-indicator{bottom:8px;left:8px;font-size:9px}}
+.icon-btn.music-on{color:var(--green);border-color:#6c8053;background:#2b3522}.icon-btn.fx-off{color:#747e66}#sound{font:9px monospace}@media(max-width:740px){.game-toolbar{padding:0 10px}.map-label{font-size:9px;letter-spacing:.5px}.tools{gap:4px}.icon-btn{width:25px}}
+.input-diagnostics{padding:10px 14px;background:#20271d;border-top:1px solid #414738;font:10px monospace;color:#a5b391}.input-diagnostics summary{cursor:pointer;font-size:9px}.input-diagnostics summary span{color:#77866b;margin-left:12px}.input-signals{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}.input-signals kbd{padding:5px 9px;color:#77866b;min-width:28px}.input-signals kbd.pressed{background:#c6df78;color:#1c2b16;border-color:#d7ec9c}.input-motion{display:flex;gap:20px;margin-top:10px;color:#9fae8c;font-size:9px}@media(max-width:740px){.input-diagnostics summary span{font-size:8px;margin-left:5px}}
+/* Dashboard stays in document flow, outside the arena. */
+.instrument-panel{position:relative;flex-shrink:0;min-width:0;padding:10px 16px 12px;background:#292e24;border-top:3px solid #657052;border-bottom:3px solid #10150d;box-shadow:inset 0 3px #3c4532,inset 4px 0 #343d2c,inset -4px 0 #171d13}
+.console-trim{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px;color:#8e9b7d;font:8px monospace;letter-spacing:2px}.console-trim b{color:#c6d2b3;font-weight:normal}.console-trim span:last-child{letter-spacing:1px;font-size:7px}
+.console-cluster{display:grid;grid-template-columns:minmax(64px,1fr) minmax(160px,2.1fr) minmax(64px,1fr);gap:8px;align-items:stretch}
+.console-module{position:relative;min-width:0;background:#10180e;border:2px solid #657451;box-shadow:2px 2px #0c1209,inset 2px 2px #070c05}
+.console-side{display:flex;flex-direction:column;justify-content:space-between;padding:8px 10px;gap:5px;min-width:0}
+.console-heading{display:flex;justify-content:space-between;align-items:center;gap:4px;font:8px monospace;letter-spacing:1px;color:#8d9d79;white-space:nowrap}.console-heading b{color:var(--green);font:bold 11px monospace;letter-spacing:0}
+.console-car{display:block;width:66px;height:34px;max-width:100%;align-self:center;shape-rendering:crispEdges}.console-car .car-body{fill:#ff9955}.console-car.damaged .car-body{fill:#e66d42}.console-car.critical .car-body{fill:#ed4b38}
+.condition-track{height:8px;background:repeating-linear-gradient(90deg,#2f3d25 0 5px,#11190e 5px 7px)}.condition-track i{display:block;height:100%;width:100%;background:repeating-linear-gradient(90deg,#c6df78 0 5px,#11190e 5px 7px)}.condition-track.warn i{background:repeating-linear-gradient(90deg,#ff793f 0 5px,#11190e 5px 7px)}
+.console-state{display:flex;align-items:center;justify-content:center;gap:5px;color:#8a9b75;font:7px monospace;white-space:nowrap}.console-state i{display:block;width:4px;height:4px;background:#bed57a;box-shadow:1px 1px #465b2c}
+.speedometer{position:relative;display:flex;align-items:center;justify-content:center;padding:4px;pointer-events:none}
+.speedometer::before,.speedometer::after{content:"";position:absolute;width:3px;height:3px;top:4px;background:#9aa982;box-shadow:0 1px #35432b}.speedometer::before{left:4px}.speedometer::after{right:4px}
+canvas.speed-dial{display:block;width:100%;height:auto;max-width:320px;aspect-ratio:10/3;image-rendering:pixelated;touch-action:auto}
+.console-lamp{display:flex;align-items:center;gap:7px;color:#536346;font:8px monospace;letter-spacing:1px;border-bottom:1px solid #25321e;padding-bottom:5px;white-space:nowrap}.console-lamp i{display:block;width:6px;height:6px;flex-shrink:0;background:#34402b;box-shadow:1px 1px #070c05}.console-lamp.on{color:#d6e7ab}.console-lamp.on i{background:#c6df78;box-shadow:2px 0 #617c3e}.console-lamp.brake.on{color:#ffae78}.console-lamp.brake.on i{background:#ff793f;box-shadow:2px 0 #843f23}
+.steering-label{font:7px monospace;letter-spacing:2px;text-align:center;color:#8b9c76}.steering-track{position:relative;height:7px;background:#293820;border-left:2px solid #697d50;border-right:2px solid #697d50}.steering-track::before{content:"";position:absolute;left:50%;top:0;width:1px;height:100%;background:#607448}.steering-track i{position:absolute;top:1px;left:50%;width:5px;height:5px;transform:translateX(-50%);background:#d5e6ad}
+.console-lower{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:8px}.console-vent{height:8px;border:1px solid #151d10;background:repeating-linear-gradient(90deg,#121a0e 0 3px,#4c583e 3px 5px);box-shadow:0 1px #4a563d}.console-badge{font:6px monospace;letter-spacing:3px;color:#8c977c}.console-bolt{position:absolute;width:4px;height:4px;background:#778264;box-shadow:1px 1px #11180d;bottom:7px}.console-bolt.left{left:5px}.console-bolt.right{right:5px}
+@media(max-width:740px){.instrument-panel{padding:9px 8px 10px}.console-cluster{gap:5px}.console-side{padding:6px 5px;gap:4px}.console-heading{font-size:7px;letter-spacing:0}.console-heading b{font-size:9px}.console-lamp{font-size:7px;letter-spacing:0;gap:5px;padding-bottom:4px}.console-state{font-size:6px;gap:3px}.console-car{height:25px}.console-trim{font-size:7px;letter-spacing:1px;margin-bottom:6px}.console-trim span:last-child{font-size:6px}.console-lower{margin-top:6px}.console-badge{font-size:5px;letter-spacing:2px}.console-module{border-width:1px}}
+.instrument-value{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.game:fullscreen .stage{flex:1 1 auto;min-height:0;width:100%;max-height:none;aspect-ratio:auto}
+.game:fullscreen #canvas{object-fit:contain}
+.game:fullscreen .input-diagnostics{display:none}
+.game:fullscreen .instrument-panel{padding:5px 12px;max-height:160px}
+.game:fullscreen .console-cluster{max-width:800px;margin:auto}
+.game:fullscreen canvas.speed-dial{width:100%;max-width:260px;height:auto}
+.game:fullscreen .console-trim,.game:fullscreen .console-lower{display:none}
+@media(max-width:350px){.console-cluster{grid-template-columns:minmax(54px,1fr) minmax(130px,2.1fr) minmax(54px,1fr)}.console-state{font-size:5px}.console-trim span:last-child{display:none}}
+
+/* Walnut veneer, brass hardware, and recessed instrument glass. */
+.instrument-panel{
+ background-color:#503120;
+ background-image:linear-gradient(180deg,#c49a5d44 0 2px,#26180d38 2px 5px,transparent 5px calc(100% - 6px),#21140c77 calc(100% - 6px) calc(100% - 2px),#aa79424d calc(100% - 2px)),url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256%22%20height%3D%2264%22%20viewBox%3D%220%200%20256%2064%22%20shape-rendering%3D%22crispEdges%22%3E%0A%3Cpath%20fill%3D%22%23503120%22%20d%3D%22M0%200h256v64H0z%22%2F%3E%0A%3Cpath%20fill%3D%22%2369432b%22%20d%3D%22M0%203h41v1h33v1h49V4h38V3h57v1h38v2h-43V5h-51v1h-42v1H72V6H39V5H0zM0%2025h32v-1h35v-1h46v1h39v2h44v-1h60v2h-59v1h-47v-2h-37v-1H68v1H34v1H0zM0%2048h48v1h33v2h47v-1h38v-2h48v1h42v2h-43v-1h-45v2h-38v1H78v-2H46v-1H0z%22%2F%3E%0A%3Cpath%20fill%3D%22%233c251a%22%20d%3D%22M0%2011h26v1h46v2h51v-1h39v-2h59v1h35v2h-36v-1h-56v2h-39v1H70v-2H25v-1H0zM0%2037h53v-1h29v-2h52v1h28v1h51v-1h43v2h-42v1h-53v-1h-28v-1H84v2H55v1H0zM0%2059h31v-1h49v-1h41v1h45v1h44v-1h46v2h-45v1h-47v-1h-44v-1H82v1H33v1H0z%22%2F%3E%0A%3Cpath%20fill%3D%22%23795037%22%20opacity%3D%22.6%22%20d%3D%22M0%2019h59v1h35v-1h62v-1h43v1h57v1h-56v-1h-43v1H95v1H58v-1H0zM0%2043h22v1h43v1h65v-1h38v-2h44v1h44v1h-43v-1h-44v2h-38v1H64v-1H21v-1H0z%22%2F%3E%0A%3Cpath%20fill%3D%22%23382319%22%20d%3D%22M176%2026h22v1h9v2h5v5h-5v2h-9v1h-22v-1h-9v-2h-5v-5h5v-2h9z%22%2F%3E%0A%3Cpath%20fill%3D%22%2366412b%22%20d%3D%22M178%2028h19v1h8v2h3v2h-11v2h-19v-1h-8v-2h-3v-1h11z%22%2F%3E%0A%3Cpath%20fill%3D%22%2344291c%22%20d%3D%22M181%2030h15v1h6v1h-7v1h-14v-1h-6v-1h6z%22%2F%3E%0A%3Cpath%20fill%3D%22%23845b3b%22%20opacity%3D%22.45%22%20d%3D%22M10%207h25v1H10zM90%2030h42v1H90zM219%2053h29v1h-29zM38%2055h18v1H38z%22%2F%3E%0A%3C%2Fsvg%3E");
+ background-size:100% 100%,512px 128px;
+ border-top:3px solid #ac8955;border-bottom:3px solid #20150e;
+ box-shadow:inset 3px 0 #9b6a3d,inset -3px 0 #2c1c12,inset 0 5px #301d1355,0 1px #765332;
+}
+.console-trim{color:#cfb48a;text-shadow:1px 1px #24170e}.console-trim b{color:#f0d3a0}.console-trim span:last-child{color:#bfa07a}
+.console-module{border-color:#a88d5d;box-shadow:0 0 0 1px #24170e,2px 3px #291a13,inset 2px 2px #050a04}
+.speedometer::before,.speedometer::after{background:#c8a568;box-shadow:1px 1px #574027}
+.console-vent{border-color:#ae8b56 #382619 #25190f #987346;background:repeating-linear-gradient(90deg,#15150e 0 3px,#655238 3px 5px);box-shadow:0 1px #bb8b4d,inset 0 2px #11140c}
+.console-badge{color:#e2bd7f;background:#302319;border:1px solid #9f7e4d;padding:3px 7px;text-shadow:1px 1px #140f09;box-shadow:1px 1px #25170f}
+.console-bolt{width:6px;height:6px;bottom:9px;background:linear-gradient(135deg,#edcc8d 0 33%,#ad844b 33% 75%,#72512d 75%);box-shadow:1px 1px #24180f}
+.console-bolt::after{content:"";position:absolute;top:2px;left:1px;width:4px;height:1px;background:#49321d}
+.console-bolt.left{left:5px}.console-bolt.right{right:5px}
+@media(max-width:740px){.console-badge{padding:2px 5px;letter-spacing:1px}.console-bolt{width:4px;height:4px;bottom:8px}.console-bolt.left{left:3px}.console-bolt.right{right:3px}.console-bolt::after{top:1px;left:1px;width:2px}}
 </style>
 </head>
 <body>
 <div class="shell">
 <header><div class="brand"><div class="brand-icon">↯</div><div><div class="brand-name">КРАШ!</div><div class="brand-sub">ПИКСЕЛЬНАЯ АВТОРАЗБОРКА</div></div></div><div class="header-right"><i class="dot"></i> МАЛЕНЬКАЯ ИГРА. БОЛЬШОЙ БЕСПОРЯДОК.</div></header>
-<section class="intro"><div><h1>Газ в пол. <span>Всё в щепки.</span></h1><p>Заброшенный двор, одна машинка и ничего, что жалко разбить.</p></div><div class="tag">v2 / ФИЗИКА / СВОБОДНЫЙ ЗАЕЗД</div></section>
+<section class="intro"><div><h1>Газ в пол. <span>Всё в щепки.</span></h1><p>Заброшенный двор, одна машинка и ничего, что жалко разбить.</p></div><div class="tag">0.2 / ФИЗИКА / СВОБОДНЫЙ ЗАЕЗД</div></section>
 <section class="mode-settings" aria-label="Настройки заезда"><div class="mode-switch"><button type="button" data-mode="free" class="selected" aria-pressed="true">Свободный заезд</button><button type="button" data-mode="arcade" aria-pressed="false">90 секунд</button></div><label class="damage-option" id="damageOption"><input type="checkbox" id="invulnerability" checked><span>Неуязвимая машинка</span></label><span id="modeHelp" class="mode-help">Весь двор твой. Без таймера и финиша.</span></section><main class="layout">
-<section class="game" id="game"><div class="game-toolbar"><div class="map-label"><span>01 /</span> СТАРЫЙ ПРОМДВОР</div><div class="tools"><button class="icon-btn" id="sound" title="Включить звук" aria-label="Включить звук" aria-pressed="false">♪̸</button><button class="icon-btn" id="pause" title="Пауза (P)" aria-label="Пауза">Ⅱ</button><button class="icon-btn" id="restart" title="Заново (R)" aria-label="Начать заново">↻</button><button class="icon-btn" id="full" title="На весь экран" aria-label="На весь экран">⛶</button></div></div>
-<div class="stage"><canvas tabindex="0" id="canvas" width="768" height="480" aria-label="Игровое поле. Управление: W A S D или стрелки, пробел — дрифт."></canvas><div id="driftIndicator" class="drift-indicator">ЗАНОС ↝</div><div class="speed"><strong id="speed">0</strong><small>КМ/Ч</small></div><div class="toast" id="toast"></div><div class="overlay" id="overlay"><div class="modal"><div class="mini-car">▟▰▙</div><div class="eyebrow" id="eyebrow">ДОБРО ПОЖАЛОВАТЬ НА РАЗБОРКУ</div><h2 id="modalTitle">Устрой беспорядок.</h2><p id="modalText">Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.</p><button class="primary" id="start">ЗАВЕСТИ МОТОР →</button><small id="modalHint">WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ — ДРИФТ</small></div></div></div>
-<div class="game-footer"><span class="live" id="status">● ДВОР ГОТОВ К РАЗНОСУ</span><span>ЯЩИКИ · КИРПИЧИ · ВЗРЫВНЫЕ БОЧКИ</span></div></section>
-<aside><div class="card"><div class="card-title">ТВОЙ БЕСПОРЯДОК</div><div class="score" id="score">00000</div><div class="record"><span id="recordLabel">РЕКОРД СВОБОДНОГО ЗАЕЗДА</span> <b id="best">00000</b></div><div class="stats-row"><div class="label-small" id="timeLabel">БЕЗ ТАЙМЕРА</div><div class="timer" id="timer">01:30</div></div></div><div class="card"><div class="card-title">СОСТОЯНИЕ ДВОРА</div><div class="progress-label"><span>Разрушено</span><b id="percent">0 / 65%</b></div><div class="bar"><i id="destruction"></i></div><div class="progress-label"><span id="healthLabel">Урон отключён</span><b id="hp">100%</b></div><div class="bar health"><i id="health"></i></div><p class="target-note">Зелёные ремкомплекты чинят машину. Красные бочки любят взрываться.</p></div><div class="card controls"><div class="card-title">КАК РАЗНЕСТИ ЭТО МЕСТО</div><div class="control-row"><div class="keys"><kbd>W</kbd><kbd>↑</kbd></div><span>Газ</span></div><div class="control-row"><div class="keys"><kbd>S</kbd><kbd>↓</kbd></div><span>Тормоз / назад</span></div><div class="control-row"><div class="keys"><kbd>A</kbd><kbd>D</kbd><kbd>←</kbd><kbd>→</kbd></div><span>Поворот</span></div><div class="control-row"><kbd>ПРОБЕЛ</kbd><span>Ручник / дрифт</span></div><p class="tip">Больше скорость — сильнее удар.<br>Бочки запускают цепную реакцию.</p></div></aside>
+<section class="game" id="game"><div class="game-toolbar"><div class="map-label"><span>01 /</span> СТАРЫЙ ПРОМДВОР</div><div class="tools"><button class="icon-btn music-on" id="music" title="Выключить музыку «Ночная смена» · 92 BPM" aria-label="Выключить музыку" aria-pressed="true">♫</button><button class="icon-btn fx-off" id="sound" title="Включить звук" aria-label="Включить звук" aria-pressed="false">FX</button><button class="icon-btn" id="pause" title="Пауза (P)" aria-label="Пауза">Ⅱ</button><button class="icon-btn" id="restart" title="Заново (R)" aria-label="Начать заново">↻</button><button class="icon-btn" id="full" title="На весь экран" aria-label="На весь экран">⛶</button></div></div>
+<div class="stage"><canvas tabindex="0" id="canvas" width="768" height="480" aria-label="Игровое поле. Управление: W A S D или стрелки, пробел или Shift — дрифт."></canvas><div id="driftIndicator" class="drift-indicator">ЗАНОС ↝</div><div class="toast" id="toast"></div><div class="overlay" id="overlay"><div class="modal"><div class="mini-car">▟▰▙</div><div class="eyebrow" id="eyebrow">ДОБРО ПОЖАЛОВАТЬ НА РАЗБОРКУ</div><h2 id="modalTitle">Устрой беспорядок.</h2><p id="modalText">Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.</p><button class="primary" id="start">ЗАВЕСТИ МОТОР →</button><small id="modalHint">WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ / SHIFT — РУЧНИК</small></div></div></div>
+<div class="instrument-panel" aria-label="Приборная панель">
+<div class="console-trim"><b>КРАШ · БОРТ 01</b><span>ПИКСЕЛЬНАЯ АВТОРАЗБОРКА</span></div>
+<div class="console-cluster">
+<div class="console-module console-side" role="group" aria-label="Состояние машинки">
+<div class="console-heading"><span>КУЗОВ</span><b id="consoleHp">∞</b></div>
+<svg id="consoleCar" class="console-car" viewBox="0 0 48 24" aria-hidden="true"><path fill="#526243" d="M10 3h28v2h4v14h-4v2H10v-2H6V5h4z"/><path fill="#080e06" d="M10 1h7v3h-7zm21 0h7v3h-7zM10 20h7v3h-7zm21 0h7v3h-7z"/><path class="car-body" d="M10 5h28v2h3v10h-3v2H10v-2H7V7h3z"/><path fill="#283e2b" d="M17 7h11v10H17zm-6 1h3v8h-3z"/><path fill="#aac4a0" d="M28 7h3v10h-3z"/><path fill="#ffe9b0" d="M38 6h3v3h-3zm0 9h3v3h-3z"/><path fill="#89392b" d="M7 6h2v3H7zm0 9h2v3H7z"/></svg>
+<div id="consoleCondition" class="condition-track"><i id="consoleHealthBar"></i></div>
+<div class="console-state"><i></i><span id="consoleProtection">ЩИТ ВКЛ.</span></div>
+</div>
+<div class="console-module speedometer" id="speedometer" role="group" aria-label="Пиксельный спидометр">
+<canvas class="speed-dial" id="speedDial" width="160" height="48" aria-hidden="true"></canvas>
+<span class="instrument-value"><span id="speed">000</span> км/ч · <span id="speedDirection">N</span></span>
+</div>
+<div class="console-module console-side" role="group" aria-label="Индикаторы управления">
+<div class="console-lamp" id="consoleGas"><i></i><span>ГАЗ</span></div>
+<div class="console-lamp brake" id="consoleBrake"><i></i><span>РУЧНИК</span></div>
+<div class="steering-label">← РУЛЬ →</div><div class="steering-track"><i id="consoleSteering"></i></div>
+</div>
+</div>
+<div class="console-lower" aria-hidden="true"><div class="console-vent"></div><span class="console-badge">CRASH MOTOR CO.</span><div class="console-vent"></div></div><i class="console-bolt left" aria-hidden="true"></i><i class="console-bolt right" aria-hidden="true"></i>
+</div>
+<div class="game-footer"><span class="live" id="status">● ДВОР ГОТОВ К РАЗНОСУ</span><span>ЯЩИКИ · КИРПИЧИ · ВЗРЫВНЫЕ БОЧКИ</span></div><details class="input-diagnostics" open><summary>ПРОВЕРКА УПРАВЛЕНИЯ <span>зелёный = нажатие получено</span></summary><div class="input-signals"><kbd id="input-up">↑ ГАЗ</kbd><kbd id="input-down">↓ НАЗАД</kbd><kbd id="input-left">←</kbd><kbd id="input-right">→</kbd><kbd id="input-handbrake">РУЧНИК</kbd></div><div class="input-motion"><span id="input-motion">ХОД: СТОИМ</span><span id="input-turn">ВРАЩЕНИЕ: —</span></div></details></section>
+<aside><div class="card"><div class="card-title">ТВОЙ БЕСПОРЯДОК</div><div class="score" id="score">00000</div><div class="record"><span id="recordLabel">РЕКОРД СВОБОДНОГО ЗАЕЗДА</span> <b id="best">00000</b></div><div class="stats-row"><div class="label-small" id="timeLabel">БЕЗ ТАЙМЕРА</div><div class="timer" id="timer">01:30</div></div></div><div class="card"><div class="card-title">СОСТОЯНИЕ ДВОРА</div><div class="progress-label"><span>Разрушено</span><b id="percent">0 / 65%</b></div><div class="bar"><i id="destruction"></i></div><div class="progress-label"><span id="healthLabel">Урон отключён</span><b id="hp">100%</b></div><div class="bar health"><i id="health"></i></div><p class="target-note">Зелёные ремкомплекты чинят машину. Красные бочки любят взрываться.</p></div><div class="card controls"><div class="card-title">КАК РАЗНЕСТИ ЭТО МЕСТО</div><div class="control-row"><div class="keys"><kbd>W</kbd><kbd>↑</kbd></div><span>Газ</span></div><div class="control-row"><div class="keys"><kbd>S</kbd><kbd>↓</kbd></div><span>Тормоз / назад</span></div><div class="control-row"><div class="keys"><kbd>A</kbd><kbd>D</kbd><kbd>←</kbd><kbd>→</kbd></div><span>Поворот</span></div><div class="control-row"><div class="keys"><kbd>ПРОБЕЛ</kbd><kbd>SHIFT</kbd></div><span>Ручник</span></div><p class="tip">Больше скорость — сильнее удар.<br>Бочки запускают цепную реакцию.</p></div></aside>
 </main>
 <div class="touch" aria-label="Сенсорное управление"><div class="touch-group"><button data-key="ArrowLeft" aria-label="Налево">◀</button><button data-key="ArrowRight" aria-label="Направо">▶</button></div><div class="touch-group"><button data-key="Space">ДРИФТ</button><button data-key="ArrowDown" aria-label="Назад">▼</button><button data-key="ArrowUp" aria-label="Газ">▲</button></div></div>
 <section class="bottom"><div class="detail"><div class="detail-icon">▦</div><div><h3>Всё по кирпичику</h3><p>Стены обваливаются, обломки отскакивают.</p></div></div><div class="detail"><div class="detail-icon">⌁</div><div><h3>Повороты с характером</h3><p>Лови настоящий занос. Оставляй дым и следы.</p></div></div><div class="detail"><div class="detail-icon">↻</div><div><h3>Ещё один заезд?</h3><p>Гуляй без таймера. Жми R для нового двора.</p></div></div></section>
@@ -26,25 +93,267 @@
 </div>
 <script>
 'use strict';
+// Original, browser-generated soundtrack. No audio downloads or third-party recordings.
+(() => {
+  class CrashMusic {
+    constructor({onError = () => {}} = {}) {
+      this.enabled = true;
+      try { this.enabled = localStorage.getItem('crash-music') !== 'off'; } catch {}
+      this.playing = false;
+      this.context = null;
+      this.timer = null;
+      this.step = 0;
+      this.nextTime = 0;
+      this.bpm = 92;
+      this.onError = onError;
+    }
+
+    setEnabled(enabled) {
+      this.enabled = enabled;
+      try { localStorage.setItem('crash-music', enabled ? 'on' : 'off'); } catch {}
+      if (enabled && this.playing) this._activate();
+      else this._halt();
+    }
+
+    setPlaying(playing) {
+      this.playing = playing;
+      if (playing && this.enabled) this._activate();
+      else this._halt();
+    }
+
+    _ensureContext() {
+      if (this.context) return;
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) throw new Error('Web Audio is unavailable');
+      const ctx = new Audio();
+      this.context = ctx;
+      this.master = ctx.createGain();
+      this.master.gain.value = 0;
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.value = -18;
+      compressor.knee.value = 20;
+      compressor.ratio.value = 4;
+      compressor.attack.value = .008;
+      compressor.release.value = .25;
+      this.master.connect(compressor).connect(ctx.destination);
+
+      // A short, dark echo gives the melody space without drowning out the car.
+      this.delay = ctx.createDelay(1);
+      this.delay.delayTime.value = 60 / this.bpm * .75;
+      const feedback = ctx.createGain(), echoTone = ctx.createBiquadFilter();
+      feedback.gain.value = .24;
+      echoTone.type = 'lowpass';
+      echoTone.frequency.value = 2400;
+      const wet = ctx.createGain();
+      wet.gain.value = .22;
+      this.delay.connect(echoTone);
+      echoTone.connect(feedback).connect(this.delay);
+      echoTone.connect(wet).connect(this.master);
+
+      this.noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+      const samples = this.noise.getChannelData(0);
+      let seed = 731;
+      for (let i = 0; i < samples.length; i++) {
+        seed = (seed * 1664525 + 1013904223) >>> 0;
+        samples[i] = seed / 2147483648 - 1;
+      }
+    }
+
+    _activate() {
+      try {
+        this._ensureContext();
+        const begin = () => {
+          if (!this.enabled || !this.playing || this.timer !== null) return;
+          const ctx = this.context;
+          this.master.gain.cancelScheduledValues(ctx.currentTime);
+          this.master.gain.setTargetAtTime(.38, ctx.currentTime, .18);
+          this.nextTime = ctx.currentTime + .06;
+          this._schedule();
+          this.timer = setInterval(() => this._schedule(), 40);
+        };
+        if (this.context.state === 'suspended') this.context.resume().then(begin).catch(() => this._fail());
+        else begin();
+      } catch { this._fail(); }
+    }
+
+    _fail() {
+      this._halt();
+      this.enabled = false;
+      this.onError();
+    }
+
+    _halt() {
+      if (this.timer !== null) clearInterval(this.timer);
+      this.timer = null;
+      if (!this.master) return;
+      const now = this.context.currentTime;
+      this.master.gain.cancelScheduledValues(now);
+      this.master.gain.setTargetAtTime(0, now, .055);
+    }
+
+    _schedule() {
+      if (!this.enabled || !this.playing || this.context.state !== 'running') return;
+      // Recover after a delayed background timer without replaying a backlog.
+      if (this.nextTime < this.context.currentTime - .1) this.nextTime = this.context.currentTime + .03;
+      const beat = 60 / this.bpm;
+      while (this.nextTime < this.context.currentTime + .18) {
+        this._step(this.step, this.nextTime, beat);
+        this.nextTime += beat / 4;
+        this.step = (this.step + 1) % 128;
+      }
+    }
+
+    _step(step, time, beat) {
+      const position = step % 16, bar = Math.floor(step / 16), chord = bar % 4;
+      const chords = [[57,60,64,71], [53,57,60,67], [48,55,59,64], [55,59,62,69]];
+      const roots = [33,29,36,31];
+      const melody = [[76,71,72,69], [72,69,67,64], [71,67,64,67], [74,71,69,67]];
+      const swing = position % 2 ? .014 : 0;
+      if (position === 0) this._pad(chords[chord], time, beat * 4);
+      if ([0,3,6,8,10,14].includes(position)) {
+        const octave = position === 14 ? 12 : 0;
+        this._tone(roots[chord] + octave, time + swing, beat * .55, .2, 'triangle', 480);
+      }
+      if (position === 0 || position === 8 || bar % 2 && position === 14) this._kick(time + swing);
+      if (position === 4 || position === 12) {
+        this._noise(time, .15, .095, 1400);
+        this._tone(50, time, .1, .055, 'triangle', 1600);
+      }
+      if (position % 2 === 0 || bar >= 4 && position === 15) {
+        this._noise(time + swing, position === 14 ? .12 : .045, position % 4 === 0 ? .024 : .035, 7200);
+      }
+      if ([2,6,10,14].includes(position)) {
+        const note = melody[chord][Math.floor(position / 4)];
+        this._tone(note, time + swing, beat * .65, bar < 4 ? .055 : .065, 'sine', 3200, true);
+      }
+    }
+
+    _frequency(note) { return 440 * 2 ** ((note - 69) / 12); }
+
+    _tone(note, time, duration, volume, type, cutoff, echo = false) {
+      const ctx = this.context, osc = ctx.createOscillator(), gain = ctx.createGain(), filter = ctx.createBiquadFilter();
+      osc.type = type;
+      osc.frequency.value = this._frequency(note);
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(cutoff, time);
+      filter.frequency.exponentialRampToValueAtTime(Math.max(100, cutoff * .4), time + duration);
+      gain.gain.setValueAtTime(.0001, time);
+      gain.gain.exponentialRampToValueAtTime(volume, time + .012);
+      gain.gain.exponentialRampToValueAtTime(.0001, time + duration);
+      osc.connect(filter).connect(gain).connect(this.master);
+      if (echo) gain.connect(this.delay);
+      osc.start(time);
+      osc.stop(time + duration + .02);
+      osc.onended = () => {osc.disconnect(); filter.disconnect(); gain.disconnect()};
+    }
+
+    _pad(notes, time, duration) {
+      const ctx = this.context;
+      for (const note of notes) {
+        const gain = ctx.createGain(), filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(650, time);
+        filter.frequency.linearRampToValueAtTime(1250, time + duration * .5);
+        filter.frequency.linearRampToValueAtTime(650, time + duration);
+        gain.gain.setValueAtTime(.0001, time);
+        gain.gain.linearRampToValueAtTime(.022, time + .55);
+        gain.gain.setValueAtTime(.022, time + duration * .75);
+        gain.gain.exponentialRampToValueAtTime(.0001, time + duration + .85);
+        filter.connect(gain).connect(this.master);
+        const oscillators = [-7,7].map((detune, i) => {
+          const osc = ctx.createOscillator();
+          osc.type = i ? 'triangle' : 'sawtooth';
+          osc.frequency.value = this._frequency(note);
+          osc.detune.value = detune;
+          osc.connect(filter);
+          osc.start(time);
+          osc.stop(time + duration + .9);
+          return osc;
+        });
+        oscillators[1].onended = () => {for (const osc of oscillators) osc.disconnect(); filter.disconnect(); gain.disconnect()};
+      }
+    }
+
+    _kick(time) {
+      const ctx = this.context, osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.frequency.setValueAtTime(115, time);
+      osc.frequency.exponentialRampToValueAtTime(42, time + .13);
+      gain.gain.setValueAtTime(.0001, time);
+      gain.gain.exponentialRampToValueAtTime(.48, time + .006);
+      gain.gain.exponentialRampToValueAtTime(.0001, time + .29);
+      osc.connect(gain).connect(this.master);
+      osc.start(time);
+      osc.stop(time + .32);
+      osc.onended = () => {osc.disconnect(); gain.disconnect()};
+    }
+
+    _noise(time, duration, volume, cutoff) {
+      const ctx = this.context, source = ctx.createBufferSource(), gain = ctx.createGain(), filter = ctx.createBiquadFilter();
+      source.buffer = this.noise;
+      filter.type = 'highpass';
+      filter.frequency.value = cutoff;
+      gain.gain.setValueAtTime(volume, time);
+      gain.gain.exponentialRampToValueAtTime(.0001, time + duration);
+      source.connect(filter).connect(gain).connect(this.master);
+      source.start(time);
+      source.stop(time + duration + .01);
+      source.onended = () => {source.disconnect(); filter.disconnect(); gain.disconnect()};
+    }
+  }
+
+  window.CrashMusic = CrashMusic;
+})();
+
+</script>
+<script>
+'use strict';
 (() => {
 const $ = id => document.getElementById(id);
 const canvas = $('canvas'), ctx = canvas.getContext('2d');
+const speedCtx=$('speedDial').getContext('2d');
+let dialSpeed=0;
 const W = 768, H = 480, keys = new Set();
+const keyboardKeys = new Set(), pointerKeys = new Map();
+const drivingKeys = new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ShiftLeft','ShiftRight']);
 const palette = {brick:['#ac6144','#bf7450','#98593e'],crate:['#b78a4c','#c39c60','#a7783d'],barrel:['#b84f38'],fence:['#9f9a70']};
 let objects=[], particles=[], debris=[], rings=[], scars=[], skids=[], pickups=[], popups=[], collapseQueue=[], groups=[], grid=new Map();
 let car, state='ready', mode='free', invulnerable=true, remaining=90, elapsed=0, score=0, dead=0, total=0, shake=0;
 let combo=0, comboTime=0, toastTime=0, last=0, muted=true, audio=null, best=0, seed=301, cleared=false, driftSmoke=0;
+const soundtrack=window.CrashMusic?new window.CrashMusic({onError:()=>{syncMusicButton();message('МУЗЫКА НЕДОСТУПНА В ЭТОМ БРАУЗЕРЕ')}}):null;
+function syncMusicButton(){const enabled=!!soundtrack?.enabled;$('music').setAttribute('aria-pressed',String(enabled));$('music').setAttribute('aria-label',enabled?'Выключить музыку':'Включить музыку');$('music').title=(enabled?'Выключить':'Включить')+' музыку «Ночная смена» · 92 BPM';$('music').classList.toggle('music-on',enabled)}
 function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h)}
+function readControls(){return {
+ up:keys.has('KeyW')||keys.has('ArrowUp'),down:keys.has('KeyS')||keys.has('ArrowDown'),
+ left:keys.has('KeyA')||keys.has('ArrowLeft'),right:keys.has('KeyD')||keys.has('ArrowRight'),
+ handbrake:keys.has('Space')||keys.has('ShiftLeft')||keys.has('ShiftRight')
+}}
+function updateControlDiagnostics(){
+ if(car)updateInstrumentPanel();
+ const controls=readControls();
+ for(const name of ['up','down','left','right','handbrake']){
+  const indicator=$('input-'+name);indicator.classList.toggle('pressed',!!controls[name]);indicator.setAttribute('data-pressed',String(!!controls[name]));
+ }
+ if(!car)return;
+ const forward=car.vx*Math.cos(car.a)+car.vy*Math.sin(car.a),speed=Math.hypot(car.vx,car.vy);
+ $('input-motion').textContent=speed<5?'ХОД: СТОИМ':Math.abs(forward)<12?'ХОД: БОКОМ':forward>0?'ХОД: ВПЕРЁД':'ХОД: НАЗАД';
+ $('input-turn').textContent=Math.abs(car.yaw)<.12?'ВРАЩЕНИЕ: —':car.yaw>0?'ВРАЩЕНИЕ: ↻':'ВРАЩЕНИЕ: ↺';
+}
 function immortal(){return mode==='free' && invulnerable}
 function loadBest(){try{best=Number(localStorage.getItem(mode==='free'?'crash-best-free':'crash-best')||0)}catch{best=0}$('best').textContent=String(best).padStart(5,'0')}
 function saveBest(){if(score<=best)return;best=score;try{localStorage.setItem(mode==='free'?'crash-best-free':'crash-best',String(best))}catch{}$('best').textContent=String(best).padStart(5,'0')}
-function clearInput(){keys.clear();for(const b of document.querySelectorAll('[data-key]'))b.classList.remove('active')}
+function syncKey(code){
+ const pressed=keyboardKeys.has(code)||[...pointerKeys.values()].includes(code);
+ if(pressed)keys.add(code);else keys.delete(code);
+ for(const b of document.querySelectorAll('[data-key]'))if(b.dataset.key===code)b.classList.toggle('active',pressed);
+ updateControlDiagnostics();
+}
+function clearInput(){keyboardKeys.clear();pointerKeys.clear();keys.clear();for(const b of document.querySelectorAll('[data-key]'))b.classList.remove('active');updateControlDiagnostics()}
 function add(x,y,type,w=16,h=16,group=-1){const o={x,y,w,h,type,group,hp:type==='brick'?1.3:1,alive:true,tone:Math.floor(rand()*3),hit:0};objects.push(o);if(group>=0)groups[group].members.push(o);for(let gx=Math.floor(x/32);gx<=Math.floor((x+w)/32);gx++)for(let gy=Math.floor(y/32);gy<=Math.floor((y+h)/32);gy++){const k=gx+','+gy;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(o)}}
 function nearby(x,y,r=15){const found=new Set();for(let gx=Math.floor((x-r)/32);gx<=Math.floor((x+r)/32);gx++)for(let gy=Math.floor((y-r)/32);gy<=Math.floor((y+r)/32);gy++)for(const o of grid.get(gx+','+gy)||[])if(o.alive)found.add(o);return found}
-function reset(){seed=301;objects=[];particles=[];debris=[];rings=[];scars=[];skids=[];pickups=[];popups=[];collapseQueue=[];groups=[];grid=new Map();remaining=90;elapsed=0;score=0;dead=0;combo=0;comboTime=0;shake=0;cleared=false;driftSmoke=0;clearInput();
- car={x:384,y:387,a:-Math.PI/2,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0};
+function reset(){dialSpeed=0;seed=301;objects=[];particles=[];debris=[];rings=[];scars=[];skids=[];pickups=[];popups=[];collapseQueue=[];groups=[];grid=new Map();remaining=90;elapsed=0;score=0;dead=0;combo=0;comboTime=0;shake=0;cleared=false;driftSmoke=0;clearInput();
+ car={x:384,y:387,a:-Math.PI/2,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0,driftBlend:0};
  const wall=(x,y,cols,rows)=>{const group=groups.length;groups.push({members:[],lost:0,collapsed:false});for(let j=0;j<rows;j++)for(let i=0;i<cols;i++)add(x+i*12,y+j*10,'brick',12,10,group)};
  wall(108,93,12,2);wall(108,113,2,8);wall(228,113,2,8);wall(108,193,4,2);wall(204,193,4,2);
  wall(503,86,13,2);wall(503,106,2,8);wall(635,106,2,8);wall(551,186,9,2);
@@ -71,24 +380,105 @@ function explode(cx,cy){shake=Math.max(shake,9);noise(80,.35,.12,'sawtooth');sca
  const dx=car.x-cx,dy=car.y-cy,r=Math.hypot(dx,dy);if(r<90){const push=(1-r/90)*220;car.vx+=dx/(r||1)*push;car.vy+=dy/(r||1)*push;damage(11*(1-r/110))}
  for(const o of objects)if(o.alive&&Math.hypot(o.x+o.w/2-cx,o.y+o.h/2-cy)<76)destroy(o,true,(o.x-cx)*3,(o.y-cy)*3);
 }
-function updateHUD(){const pct=Math.floor(dead/total*100);$('score').textContent=String(score).padStart(5,'0');$('percent').textContent=mode==='free'?pct+'%':pct+' / 65%';$('destruction').style.width=Math.min(100,pct/(mode==='free'?100:65)*100)+'%';$('hp').textContent=immortal()?'∞':Math.ceil(car.hp)+'%';$('health').style.width=(immortal()?100:car.hp)+'%';$('health').parentElement.classList.toggle('protected',immortal());$('healthLabel').textContent=immortal()?'Урон отключён':'Прочность машинки';$('timeLabel').textContent=mode==='free'?'БЕЗ ТАЙМЕРА':'ОСТАЛОСЬ';const t=Math.ceil(remaining);$('timer').textContent=mode==='free'?'∞':String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');$('speed').textContent=Math.round(Math.hypot(car.vx,car.vy)*.55);$('driftIndicator').classList.toggle('on',Math.abs(car.slip)>28&&Math.hypot(car.vx,car.vy)>55)}
+// Tiny bitmap glyphs keep the instrument pixel-sharp, including offline.
+const instrumentGlyphs={
+ '0':['111','101','101','101','111'],'1':['010','110','010','010','111'],
+ '2':['111','001','111','100','111'],'3':['111','001','111','001','111'],
+ '4':['101','101','111','001','001'],'5':['111','100','111','001','111'],
+ '6':['111','100','111','101','111'],'7':['111','001','010','010','010'],
+ '8':['111','101','111','101','111'],'9':['111','101','111','001','111'],
+ 'K':['101','110','100','110','101'],'M':['101','111','111','101','101'],
+ 'H':['101','101','111','101','101'],'/':['001','001','010','100','100'],
+ 'D':['110','101','101','101','110'],'N':['101','111','111','111','101'],
+ 'R':['110','101','110','101','101']
+};
+function instrumentText(text,x,y,scale,color){
+ speedCtx.fillStyle=color;
+ for(const letter of text){
+  const glyph=instrumentGlyphs[letter];
+  if(glyph)for(let row=0;row<5;row++)for(let col=0;col<3;col++)if(glyph[row][col]==='1')speedCtx.fillRect(x+col*scale,y+row*scale,scale,scale);
+  x+=4*scale;
+ }
+}
+function updateSpeedometer(){
+ const speed=Math.hypot(car.vx,car.vy)*.55,forward=car.vx*Math.cos(car.a)+car.vy*Math.sin(car.a);
+ $('speed').textContent=String(Math.round(speed)).padStart(3,'0');
+ const direction=speed<2?'N':forward<-3?'R':forward>3?'D':'N';
+ $('speedDirection').textContent=direction;
+ $('speedDirection').setAttribute('aria-label',direction==='R'?'Задний ход':direction==='D'?'Вперёд':'Нейтраль');
+}
+function drawSpeedometer(dt){
+ const speed=Math.hypot(car.vx,car.vy)*.55;
+ dialSpeed+=(clamp(speed,0,160)-dialSpeed)*(1-Math.exp(-12*dt));
+ const cx=42,cy=29,hot=speed>=120,color=hot?'#ff9955':'#c6df78';
+ speedCtx.fillStyle='#11190e';speedCtx.fillRect(0,0,160,48);
+ for(let value=0;value<=160;value+=5){
+  const a=(-115+value/160*230)*Math.PI/180;
+  speedCtx.fillStyle=value<=dialSpeed?color:value>=125?'#78472f':'#3a4a30';
+  speedCtx.fillRect(Math.round(cx+Math.sin(a)*25)-1,Math.round(cy-Math.cos(a)*25)-1,3,3);
+  if(value%40===0){
+   const label=String(value),x=cx+Math.sin(a)*17-label.length*2+1,y=cy-Math.cos(a)*17-2;
+   instrumentText(label,Math.round(x),Math.round(y),1,'#aaba94');
+  }
+ }
+ const angle=(-115+dialSpeed/160*230)*Math.PI/180;
+ speedCtx.fillStyle='#ff793f';
+ for(let r=-3;r<=21;r++)speedCtx.fillRect(Math.round(cx+Math.sin(angle)*r),Math.round(cy-Math.cos(angle)*r),2,2);
+ speedCtx.fillStyle='#eee9c9';speedCtx.fillRect(cx-1,cy-1,4,4);
+ speedCtx.fillStyle='#63764d';speedCtx.fillRect(83,6,1,36);
+ const digits=String(Math.round(speed)).padStart(3,'0'),scale=digits.length>3?3:4;
+ instrumentText(digits,96,8,scale,hot?'#ffc18a':'#f2efd8');
+ instrumentText('KM/H',107,33,1,'#93a57d');
+ speedCtx.fillStyle='#293b20';speedCtx.fillRect(10,34,11,11);
+ instrumentText($('speedDirection').textContent,14,37,1,'#c6df78');
+}
+function updateInstrumentPanel(){
+ const controls=readControls(),protectedCar=immortal();
+ $('consoleHp').textContent=protectedCar?'∞':Math.ceil(car.hp)+'%';
+ $('consoleHealthBar').style.width=(protectedCar?100:car.hp)+'%';
+ $('consoleProtection').textContent=protectedCar?'ЩИТ ВКЛ.':car.hp<30?'РЕМОНТ':'ЩИТ ВЫКЛ.';
+ $('consoleCondition').classList.toggle('warn',!protectedCar&&car.hp<40);
+ $('consoleCar').classList.toggle('damaged',!protectedCar&&car.hp<60);
+ $('consoleCar').classList.toggle('critical',!protectedCar&&car.hp<30);
+ $('consoleGas').classList.toggle('on',controls.up);
+ $('consoleBrake').classList.toggle('on',controls.handbrake);
+ $('consoleGas').setAttribute('aria-label',controls.up?'Газ нажат':'Газ отпущен');
+ $('consoleBrake').setAttribute('aria-label',controls.handbrake?'Ручник нажат':'Ручник отпущен');
+ $('consoleSteering').style.left=(50+car.steer*40)+'%';
+}
+function updateHUD(){updateControlDiagnostics();const pct=Math.floor(dead/total*100);$('score').textContent=String(score).padStart(5,'0');$('percent').textContent=mode==='free'?pct+'%':pct+' / 65%';$('destruction').style.width=Math.min(100,pct/(mode==='free'?100:65)*100)+'%';$('hp').textContent=immortal()?'∞':Math.ceil(car.hp)+'%';$('health').style.width=(immortal()?100:car.hp)+'%';$('health').parentElement.classList.toggle('protected',immortal());$('healthLabel').textContent=immortal()?'Урон отключён':'Прочность машинки';$('timeLabel').textContent=mode==='free'?'БЕЗ ТАЙМЕРА':'ОСТАЛОСЬ';const t=Math.ceil(remaining);$('timer').textContent=mode==='free'?'∞':String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');updateSpeedometer();$('driftIndicator').classList.toggle('on',Math.abs(car.slip)>28&&Math.hypot(car.vx,car.vy)>55)}
 function overlay(title,text,button,eyebrow,hint){$('modalTitle').textContent=title;$('modalText').innerHTML=text;$('start').textContent=button;$('eyebrow').textContent=eyebrow;$('modalHint').textContent=hint;$('overlay').classList.remove('hidden')}
-function ready(){state='ready';reset();overlay('Устрой беспорядок.',mode==='free'?'Никакого таймера. Разнеси весь двор.<br>'+(immortal()?'Машинка неуязвима — газуй от души.':'Береги машинку и собирай ремкомплекты.'):'Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.','ЗАВЕСТИ МОТОР →',mode==='free'?'СВОБОДНЫЙ ЗАЕЗД':'ГОНКА НА ВРЕМЯ','WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ — РУЧНИК');$('status').textContent=mode==='free'?'● СВОБОДА. БЕСПОРЯДОК. НИКАКОЙ СПЕШКИ.':'● ДВОР ГОТОВ К РАЗНОСУ'}
-function start(){if(state==='paused'){state='playing';clearInput();$('overlay').classList.add('hidden');$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Пауза');canvas.focus();return}saveBest();reset();state='playing';$('overlay').classList.add('hidden');$('status').textContent=mode==='free'?'● СВОБОДНЫЙ ЗАЕЗД · РАЗНЕСИ ВСЁ ДО ОСНОВАНИЯ':'● ГАЗУЙ. ДВОР САМ СЕБЯ НЕ РАЗНЕСЁТ.';noise(260,.15);canvas.focus()}
+function ready(){state='ready';soundtrack?.setPlaying(false);reset();overlay('Устрой беспорядок.',mode==='free'?'Никакого таймера. Разнеси весь двор.<br>'+(immortal()?'Машинка неуязвима — газуй от души.':'Береги машинку и собирай ремкомплекты.'):'Разнеси 65% двора за 90 секунд.<br>Разгоняйся, влетай в стены и береги машинку.','ЗАВЕСТИ МОТОР →',mode==='free'?'СВОБОДНЫЙ ЗАЕЗД':'ГОНКА НА ВРЕМЯ','WASD / СТРЕЛКИ — РУЛИТЬ · ПРОБЕЛ / SHIFT — РУЧНИК');$('status').textContent=mode==='free'?'● СВОБОДА. БЕСПОРЯДОК. НИКАКОЙ СПЕШКИ.':'● ДВОР ГОТОВ К РАЗНОСУ'}
+function start(){if(state==='paused'){state='playing';soundtrack?.setPlaying(true);clearInput();$('overlay').classList.add('hidden');$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Пауза');canvas.focus();return}saveBest();reset();state='playing';soundtrack?.setPlaying(true);$('overlay').classList.add('hidden');$('status').textContent=mode==='free'?'● СВОБОДНЫЙ ЗАЕЗД · РАЗНЕСИ ВСЁ ДО ОСНОВАНИЯ':'● ГАЗУЙ. ДВОР САМ СЕБЯ НЕ РАЗНЕСЁТ.';noise(260,.15);canvas.focus()}
 function restart(){if(state==='paused')state='ready';start()}
-function finish(won){state=won?'won':'lost';clearInput();saveBest();overlay(won?'Вот это разнос!':car.hp<=0?'Мотору нужен отдых.':'Ещё по газам?',`${won?'Двор разобран. Работа выполнена.':car.hp<=0?'Машинка приняла слишком много ударов.':'В этот раз двор оказался крепче.'}<br>${Math.floor(dead/total*100)}% разрушено · ${score.toLocaleString('ru-RU')} очков`,'ЕЩЁ ОДИН ЗАЕЗД →',won?'МИССИЯ ВЫПОЛНЕНА':'ЗАЕЗД ЗАВЕРШЁН','R — НАЧАТЬ ЗАНОВО');$('status').textContent=won?'● ПРОМДВОР УСПЕШНО РАЗОБРАН':'● ВРЕМЯ НА НОВЫЙ ЗАЕЗД';noise(won?660:120,.4,.08)}
-function pause(){if(state==='playing'){state='paused';clearInput();$('pause').textContent='▶';$('pause').setAttribute('aria-label','Продолжить');overlay('Перекур.','Двор никуда не денется.<br>Продолжим, когда будешь готов.','ПРОДОЛЖИТЬ →','ИГРА НА ПАУЗЕ','P / ESC — ПРОДОЛЖИТЬ')}else if(state==='paused')start()}
+function finish(won){state=won?'won':'lost';soundtrack?.setPlaying(false);clearInput();saveBest();overlay(won?'Вот это разнос!':car.hp<=0?'Мотору нужен отдых.':'Ещё по газам?',`${won?'Двор разобран. Работа выполнена.':car.hp<=0?'Машинка приняла слишком много ударов.':'В этот раз двор оказался крепче.'}<br>${Math.floor(dead/total*100)}% разрушено · ${score.toLocaleString('ru-RU')} очков`,'ЕЩЁ ОДИН ЗАЕЗД →',won?'МИССИЯ ВЫПОЛНЕНА':'ЗАЕЗД ЗАВЕРШЁН','R — НАЧАТЬ ЗАНОВО');$('status').textContent=won?'● ПРОМДВОР УСПЕШНО РАЗОБРАН':'● ВРЕМЯ НА НОВЫЙ ЗАЕЗД';noise(won?660:120,.4,.08)}
+function pause(){if(state==='playing'){state='paused';soundtrack?.setPlaying(false);clearInput();$('pause').textContent='▶';$('pause').setAttribute('aria-label','Продолжить');overlay('Перекур.','Двор никуда не денется.<br>Продолжим, когда будешь готов.','ПРОДОЛЖИТЬ →','ИГРА НА ПАУЗЕ','P / ESC — ПРОДОЛЖИТЬ')}else if(state==='paused')start()}
 function updateDriving(dt){
- const up=keys.has('KeyW')||keys.has('ArrowUp'),down=keys.has('KeyS')||keys.has('ArrowDown'),left=keys.has('KeyA')||keys.has('ArrowLeft'),right=keys.has('KeyD')||keys.has('ArrowRight'),handbrake=keys.has('Space');
+ const {up,down,left,right,handbrake}=readControls();
  let fx=Math.cos(car.a),fy=Math.sin(car.a),forward=car.vx*fx+car.vy*fy;
+ // Engage quickly, then restore traction progressively over about 0.7 seconds.
+ car.driftBlend+=((handbrake?1:0)-car.driftBlend)*(1-Math.exp(-(handbrake?30:4)*dt));
  car.steer+=(((right?1:0)-(left?1:0))-car.steer)*(1-Math.exp(-11*dt));
- const targetYaw=car.steer*(handbrake?3.4:2.55)*clamp(Math.abs(forward)/80,0,1)*(forward<0?-1:1);
- car.yaw+=(targetYaw-car.yaw)*(1-Math.exp(-(handbrake?7:12)*dt));car.a+=car.yaw*dt;
+ const targetYaw=car.steer*(2.55+.85*car.driftBlend)*clamp(Math.abs(forward)/80,0,1)*(forward<0?-1:1);
+ car.yaw+=(targetYaw-car.yaw)*(1-Math.exp(-(12-5*car.driftBlend)*dt));car.a+=car.yaw*dt;
  // Reproject the existing world velocity after steering: heading and travel direction stay independent.
  fx=Math.cos(car.a);fy=Math.sin(car.a);forward=car.vx*fx+car.vy*fy;let lateral=-car.vx*fy+car.vy*fx;
- forward+=(up?265:0)*dt-(down?(forward>0?360:175):0)*dt;
- forward*=Math.exp(-(handbrake?.85:up||down?.3:.65)*dt);forward=clamp(forward,-105,245);
- lateral*=Math.exp(-(handbrake?1.15:10.5)*dt);car.slip=lateral;
+ const acceleration=(up?265:0)-(down?(forward>0?360:175):0);
+ // Motor limits cap added acceleration, not momentum already carried by the car.
+ forward=clamp(forward+acceleration*dt,Math.min(-105,forward),Math.max(245,forward));
+ const normalDrag=up||down?.3:.65;
+ forward*=Math.exp(-(normalDrag+(.85-normalDrag)*car.driftBlend)*dt);
+ const sideBeforeGrip=lateral;
+ const grip=1.15+9.35*(1-car.driftBlend)**2;
+ lateral*=Math.exp(-grip*dt);
+ // During exit, redirect most of the fading sideways momentum into travel
+ // along the car. This preserves the flow without adding kinetic energy.
+ if(!handbrake&&car.driftBlend>0){
+  const carriedEnergy=(sideBeforeGrip**2-lateral**2)*.92*clamp(car.driftBlend*4,0,1);
+  const direction=Math.sign(forward)||(down&&!up?-1:1);
+  forward=direction*Math.sqrt(forward**2+Math.max(0,carriedEnergy));
+ }
+ car.slip=lateral;
  car.vx=fx*forward-fy*lateral;car.vy=fy*forward+fx*lateral;
  const speed=Math.hypot(car.vx,car.vy);driftSmoke-=dt;
  if((Math.abs(lateral)>22||handbrake)&&speed>55){skids.push({x:car.x-fx*8-fy*6,y:car.y-fy*8+fx*6,t:18},{x:car.x-fx*8+fy*6,y:car.y-fy*8-fx*6,t:18});if(driftSmoke<=0){driftSmoke=.065;burst(car.x-fx*11,car.y-fy*11,'#adb09a',2,15,true)}}
@@ -156,17 +546,44 @@ function draw(t){ctx.imageSmoothingEnabled=false;ctx.save();if(shake>0)ctx.trans
  for(const p of particles){ctx.globalAlpha=clamp(p.life*(p.smoke?.45:2),0,1);rect(p.x-p.size/2,p.y-p.size/2,Math.ceil(p.size),Math.ceil(p.size),p.color)}ctx.globalAlpha=1;ctx.font='bold 11px monospace';ctx.textAlign='center';for(const p of popups){ctx.globalAlpha=Math.min(1,p.t*2);ctx.fillStyle='#f4e8b6';ctx.fillText(p.text,p.x,p.y)}ctx.globalAlpha=1;ctx.textAlign='left';ctx.restore();
 }
 function drawDebris(d){ctx.globalAlpha=Math.min(1,d.life/2);rect(d.x-d.w/2+2,d.y-d.h/2+2,d.w,d.h,'#242d2470');ctx.save();ctx.translate(Math.round(d.x),Math.round(d.y-d.z));ctx.rotate(d.a);rect(-d.w/2,-d.h/2,d.w,d.h,d.color);rect(-d.w/2,-d.h/2,d.w,1,'#e4bc7b');ctx.restore();ctx.globalAlpha=1}
-function frame(t){const dt=Math.min(.033,(t-last)/1000||.016);last=t;update(dt);draw(t);requestAnimationFrame(frame)}
+function frame(t){const dt=Math.min(.033,(t-last)/1000||.016);last=t;update(dt);draw(t);drawSpeedometer(dt);requestAnimationFrame(frame)}
 function syncSettings(){for(const b of document.querySelectorAll('[data-mode]')){const active=b.dataset.mode===mode;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active))}$('invulnerability').disabled=mode!=='free';$('damageOption').classList.toggle('disabled',mode!=='free');$('modeHelp').textContent=mode==='free'?'Весь двор твой. Без таймера и финиша.':'Разрушь 65% двора за 90 секунд.';$('recordLabel').textContent=mode==='free'?'РЕКОРД СВОБОДНОГО ЗАЕЗДА':'РЕКОРД НА ВРЕМЯ'}
 for(const b of document.querySelectorAll('[data-mode]'))b.onclick=()=>{if(b.dataset.mode===mode)return;saveBest();mode=b.dataset.mode;loadBest();syncSettings();ready()};
 $('invulnerability').onchange=()=>{invulnerable=$('invulnerability').checked;if(immortal())car.hp=100;if(state==='ready')ready();else{updateHUD();canvas.focus()}};
-document.addEventListener('keydown',e=>{const control=e.target&&['BUTTON','INPUT'].includes(e.target.tagName);if(e.code==='Space'&&control)return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();if(e.repeat){if(state==='playing')keys.add(e.code);return}if(e.code==='KeyR'){restart();return}if(e.code==='KeyP'||e.code==='Escape'){pause();return}if(e.code==='Enter'&&control)return;if((e.code==='Enter'||e.code==='Space')&&state!=='playing'){e.preventDefault();start();return}if(state==='playing')keys.add(e.code)});document.addEventListener('keyup',e=>keys.delete(e.code));
+function nativeInput(target){return target&&(['INPUT','SELECT','TEXTAREA'].includes(target.tagName)||target.isContentEditable)}
+document.addEventListener('keydown',e=>{
+ if(nativeInput(e.target))return;
+ // While driving, gameplay keys take priority over a focused toolbar button.
+ // Enter still activates the button, and form fields keep native keyboard behavior.
+ if(state==='playing'&&drivingKeys.has(e.code)){
+  e.preventDefault();keyboardKeys.add(e.code);syncKey(e.code);return;
+ }
+ if(e.repeat)return;
+ if(e.code==='KeyR'){e.preventDefault();restart();return}
+ if(e.code==='KeyP'||e.code==='Escape'){e.preventDefault();pause();return}
+ if(e.target&&e.target.tagName==='BUTTON'&&(e.code==='Enter'||e.code==='Space'))return;
+ if((e.code==='Enter'||e.code==='Space')&&state!=='playing'){e.preventDefault();start()}
+});
+document.addEventListener('keyup',e=>{
+ if(state==='playing'&&drivingKeys.has(e.code)&&!nativeInput(e.target))e.preventDefault();
+ keyboardKeys.delete(e.code);syncKey(e.code);
+});
 window.addEventListener('blur',()=>{clearInput();if(state==='playing')pause()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='playing')pause()});
-for(const b of document.querySelectorAll('[data-key]')){b.addEventListener('pointerdown',e=>{e.preventDefault();if(state!=='playing')return;b.setPointerCapture(e.pointerId);keys.add(b.dataset.key);b.classList.add('active')});for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,()=>{keys.delete(b.dataset.key);b.classList.remove('active')})}
+for(const b of document.querySelectorAll('[data-key]')){
+ b.addEventListener('pointerdown',e=>{
+  e.preventDefault();if(state!=='playing'||e.button!==0)return;
+  b.setPointerCapture(e.pointerId);pointerKeys.set(e.pointerId,b.dataset.key);syncKey(b.dataset.key);
+ });
+ for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,e=>{
+  const code=pointerKeys.get(e.pointerId);if(!code)return;
+  pointerKeys.delete(e.pointerId);syncKey(code);
+ });
+}
 $('start').onclick=start;$('restart').onclick=restart;$('pause').onclick=pause;
-$('sound').onclick=()=>{muted=!muted;$('sound').textContent=muted?'♪̸':'♪';$('sound').title=muted?'Включить звук':'Выключить звук';$('sound').setAttribute('aria-label',$('sound').title);$('sound').setAttribute('aria-pressed',String(!muted));if(!muted)noise(440,.12)};
+$('sound').onclick=()=>{muted=!muted;$('sound').textContent='FX';$('sound').classList.toggle('fx-off',muted);$('sound').title=muted?'Включить звук':'Выключить звук';$('sound').setAttribute('aria-label',$('sound').title);$('sound').setAttribute('aria-pressed',String(!muted));if(!muted)noise(440,.12)};
+$('music').onclick=()=>{if(!soundtrack){message('МУЗЫКА НЕДОСТУПНА В ЭТОМ БРАУЗЕРЕ');return}soundtrack.setEnabled(!soundtrack.enabled);syncMusicButton();if(state==='playing')canvas.focus()};
 $('full').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game').requestFullscreen()}catch{message('ПОЛНЫЙ ЭКРАН НЕДОСТУПЕН В ЭТОМ ОКНЕ')}};
-loadBest();syncSettings();ready();requestAnimationFrame(frame);
+syncMusicButton();loadBest();syncSettings();ready();requestAnimationFrame(frame);
 })();
 
 </script>

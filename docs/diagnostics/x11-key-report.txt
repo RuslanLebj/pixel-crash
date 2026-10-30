@@ -1,0 +1,29 @@
+XWayland game-key state only; no system settings changed
+ 0.00s: —
+15.44s: Up
+15.95s: Up + Left
+16.52s: Up + space
+16.56s: Up + Right + space
+18.20s: Up + space
+19.30s: Up + Right + space
+20.45s: Up + space
+21.05s: Up + Right + space
+21.78s: Up + space
+22.62s: Left + space
+22.64s: —
+22.81s: Shift_L
+23.05s: Down + Shift_L
+24.42s: Down + Left + Shift_L
+25.44s: Down + Shift_L
+26.34s: Down + Left + Shift_L
+26.86s: Down + Shift_L
+27.69s: Down + Left + Shift_L
+28.64s: Down + Shift_L
+29.33s: Down + Left + Shift_L
+30.15s: Down + Shift_L
+30.87s: Down + Left + Shift_L
+32.14s: Down + Shift_L
+32.90s: Shift_L
+32.98s: —
+37.68s: d
+37.76s: —

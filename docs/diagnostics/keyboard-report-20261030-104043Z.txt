@@ -1,0 +1,22 @@
+Read-only kernel game-key state test
+Device: /dev/input/event2
+ 0.00s: —
+ 0.87s: UP
+ 2.06s: SPACE + UP
+ 6.49s: SPACE
+ 6.51s: LEFT + SPACE
+ 7.09s: LEFT + RIGHT + SPACE
+ 7.15s: RIGHT + SPACE
+ 8.43s: LEFT + RIGHT + SPACE
+ 8.49s: LEFT + SPACE
+ 8.95s: LEFT
+ 8.98s: —
+10.27s: LEFT
+10.29s: LEFT + UP
+11.57s: UP
+11.95s: RIGHT + UP
+12.31s: RIGHT + SPACE + UP
+13.24s: RIGHT + SPACE
+13.26s: —
+
+Однозначного результата нет: ядро не показало полную проверяемую последовательность. Посмотрите список состояний или повторите тест по шагам.
