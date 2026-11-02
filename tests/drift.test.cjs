@@ -79,3 +79,58 @@ assert(car.driftBlend>.95,'handbrake must re-engage promptly during recovery');
 game.reset();
 assert.equal(game.get().driftBlend,0,'restart must reset traction state');
 console.log('Throttle, handbrake re-engagement and restart: OK');
+
+// A held handbrake must dissipate speed, not just change the cornering grip.
+function brakeRun(direction,held,fps=60){
+ const car=setup(200*direction,0);car.driftBlend=0;
+ if(held)game.keys.add('Space');
+ let distance=0,stopTime=null,previous=speed(car);
+ for(let frame=0;frame<fps*2;frame++){
+  step(1/fps);const current=speed(car);distance+=current/fps;
+  assert(car.vx*direction>=-1e-10,'handbrake must not reverse the travel direction');
+  assert(current<=previous+1e-8,'braking without gas must not create energy');
+  if(current<.5&&stopTime===null)stopTime=(frame+1)/fps;
+  previous=current;
+ }
+ return {distance,stopTime,finalSpeed:speed(car)};
+}
+for(const direction of [1,-1]){
+ const coast=brakeRun(direction,false),braking=brakeRun(direction,true);
+ assert(braking.stopTime!==null&&braking.stopTime<1.6,'handbrake must bring a straight-moving car to a stop');
+ assert.equal(braking.finalSpeed,0);
+ assert(braking.distance<coast.distance*.6,'handbrake must reduce stopping distance substantially compared with coasting');
+ console.log(direction>0?'Forward':'Reverse','handbrake: stopped in',braking.stopTime.toFixed(2)+'s','travel',braking.distance.toFixed(1),'vs coasting',coast.distance.toFixed(1));
+}
+function spinRun(direction=1,mirror=1,fps=60,releaseBrake=false){
+ const car=setup(200*direction,0);car.driftBlend=0;
+ let angleAtRelease=0,maxSlip=0;
+ for(let frame=0;frame<fps*4;frame++){
+  game.keys.clear();game.keys.add(direction>0?'KeyW':'KeyS');
+  if(!releaseBrake||frame<fps*.7)game.keys.add('Space');
+  if(frame<fps*.7)game.keys.add(mirror>0?'KeyD':'KeyA');
+  step(1/fps);
+  if(frame===Math.ceil(fps*.7)-1)angleAtRelease=car.a;
+  const difference=Math.atan2(car.vy,car.vx)-car.a-(direction<0?Math.PI:0);
+  if(speed(car)>30)maxSlip=Math.max(maxSlip,Math.abs(Math.atan2(Math.sin(difference),Math.cos(difference))));
+  assert(Number.isFinite(car.a)&&Number.isFinite(car.yaw)&&Number.isFinite(speed(car)));
+ }
+ return {angle:car.a,afterNeutral:Math.abs(car.a-angleAtRelease),maxSlip,yaw:car.yaw,speed:speed(car)};
+}
+for(const mirror of [1,-1]){
+ const spin=spinRun(1,mirror),recovered=spinRun(1,mirror,60,true);
+ assert(spin.maxSlip>Math.PI/2,'the body must be able to rotate past the direction of travel instead of locking to a drift angle');
+ assert(spin.afterNeutral>Math.PI/2,'rotational momentum must continue after steering is released');
+ assert(spin.angle*mirror>Math.PI,'a prolonged handbrake drift can spin the car around');
+ assert(Math.abs(recovered.yaw)<.02,'releasing the brake lets normal traction settle the rotation');
+ assert(Math.abs(recovered.angle)<Math.abs(spin.angle)*.7,'releasing the brake must help catch the slide');
+}
+const reverseSpin=spinRun(-1);assert(reverseSpin.angle<-Math.PI,'reverse drifts retain reversed steering and can also spin');
+console.log('Left/right/reverse spinout, neutral-steering inertia and recovery after releasing the brake: OK');
+const brakeRates=[30,60,120].map(fps=>brakeRun(1,true,fps));
+assert(Math.max(...brakeRates.map(r=>r.stopTime))-Math.min(...brakeRates.map(r=>r.stopTime))<.08);
+const spinRates=[30,60,120].map(fps=>spinRun(1,1,fps));
+assert(Math.max(...spinRates.map(r=>r.angle))-Math.min(...spinRates.map(r=>r.angle))<.15,'spinout must not depend strongly on frame rate');
+const stationary=setup(0,0);game.keys.add('Space');game.keys.add('KeyD');for(let i=0;i<120;i++)step(1/60);
+assert.equal(speed(stationary),0);assert.equal(stationary.a,0,'handbrake and steering cannot spin a stationary car');
+game.reset();assert.equal(game.get().handbrakeActive,false);assert.equal(game.get().driftDirection,1);
+console.log('30 / 60 / 120 FPS braking and rotation, stationary braking and reset: OK');

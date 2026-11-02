@@ -1,4 +1,4 @@
-function add(x,y,type,w=16,h=16,group=-1){const o={x,y,w,h,type,group,hp:type==='brick'?1.3:1,alive:true,tone:Math.floor(rand()*3),hit:0};objects.push(o);if(group>=0)groups[group].members.push(o);for(let gx=Math.floor(x/32);gx<=Math.floor((x+w)/32);gx++)for(let gy=Math.floor(y/32);gy<=Math.floor((y+h)/32);gy++){const k=gx+','+gy;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(o)}return o}
+function add(x,y,type,w=16,h=16,group=-1){const o={x,y,w,h,type,group,hp:PROP_KINDS[type]?.hp??(type==='brick'?1.3:1),alive:true,tone:Math.floor(rand()*3),hit:0};objects.push(o);if(group>=0)groups[group].members.push(o);for(let gx=Math.floor(x/32);gx<=Math.floor((x+w)/32);gx++)for(let gy=Math.floor(y/32);gy<=Math.floor((y+h)/32);gy++){const k=gx+','+gy;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(o)}return o}
 function nearby(x,y,r=15){const found=new Set();for(let gx=Math.floor((x-r)/32);gx<=Math.floor((x+r)/32);gx++)for(let gy=Math.floor((y-r)/32);gy<=Math.floor((y+r)/32);gy++)for(const o of grid.get(gx+','+gy)||[])if(o.alive)found.add(o);return found}
 function wall(x,y,cols,rows){
  const group=groups.length;groups.push({members:[],lost:0,collapsed:false});
@@ -22,8 +22,10 @@ function visibleObjects(){
 
 function reset(){dialSpeed=0;seed=activeMap().seed;objects=[];particles=[];debris=[];rings=[];scars=[];skids=[];pickups=[];popups=[];collapseQueue=[];groups=[];grid=new Map();remaining=90;elapsed=0;score=0;dead=0;combo=0;comboTime=0;shake=0;cleared=false;driftSmoke=0;clearInput();
  const map=activeMap();worldW=map.w;worldH=map.h;cityLots=[];
- car={modelId:vehicleId,x:map.spawn[0],y:map.spawn[1],a:-Math.PI/2,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0,driftBlend:0};
+ const start=mapId==='city'?cityStart():{spawn:map.spawn,a:-Math.PI/2};
+ car={modelId:vehicleId,x:start.spawn[0],y:start.spawn[1],a:start.a,vx:0,vy:0,hp:100,inv:0,steer:0,yaw:0,slip:0,driftBlend:0,handbrakeActive:false,driftDirection:1};
  if(mapId==='city')buildCity();else buildYard();
+ setupWorldLighting();
  total=objects.filter(o=>!o.solid).length;toastTime=0;camera={x:0,y:0};updateCamera(0,true);
  $('toast').classList.remove('show');$('pause').textContent='Ⅱ';$('pause').setAttribute('aria-label','Пауза');updateHUD();
 }

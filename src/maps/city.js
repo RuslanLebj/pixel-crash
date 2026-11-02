@@ -1,11 +1,12 @@
 function building(x,y,w,h,kind,index){
- const o=add(x,y,'building',w,h);o.solid=true;o.hp=Infinity;o.kind=kind;o.index=index;
+ const o=add(x,y,'building',w,h);o.solid=true;o.hp=Infinity;o.kind=kind;o.index=index;return o;
 }
 function buildCity(){
  cityLots=[];
  for(let row=0;row<CITY_Y.length-1;row++)for(let col=0;col<CITY_X.length-1;col++){
+  if(col>=3&&row<=1)continue;
   const x=CITY_X[col]+82,y=CITY_Y[row]+82,w=348,h=348;
-  const park=(row===2&&col===3)||(row===0&&col===1)||(row===3&&col===5);
+  const park=(row===2&&col===3)||(row===0&&col===1)||(row===3&&col===4);
   const kind=park?'park':row>=3&&col<3?'industrial':(col+row*3)%5===0?'parking':'residential';
   cityLots.push({x,y,w,h,kind,row,col});
   if(kind==='park'){
@@ -39,13 +40,15 @@ function buildCity(){
   // Keep the road network empty; obstacles sit inside the courtyards.
   if((row+col)%2===0)pickups.push({x:x+184,y:y+184,alive:true});
  }
- pickups.push({x:704,y:2560,alive:true},{x:2240,y:704,alive:true},{x:3264,y:2240,alive:true});
+ pickups.push({x:704,y:2560,alive:true},{x:2240,y:1728,alive:true});
+ buildCityLandmarks();
 }
 function cityGround(){
  rect(camera.x-2,camera.y-2,W+4,H+4,'#455442');
  for(let gy=Math.floor(camera.y/32);gy<=(camera.y+H)/32;gy++)for(let gx=Math.floor(camera.x/32);gx<=(camera.x+W)/32;gx++){
   const hash=(gx*137+gy*197)>>>0;rect(gx*32+hash%23,gy*32+(hash*7)%27,3,1,hash%3?'#4c5c45':'#3e4d3b');
  }
+ drawCityTerrain();
  for(const lot of cityLots)if(visible(lot.x,lot.y,lot.w,lot.h)){
   const {x,y,w,h,kind}=lot;
   rect(x-16,y-16,w+32,h+32,'#787d68');rect(x-12,y-12,w+24,h+24,'#999b80');
@@ -62,27 +65,26 @@ function cityGround(){
    for(let i=0;i<9;i++)rect(x+170,y+18+i*36,18,1,'#7b8067');
   }
  }
- for(const x of CITY_X)if(visible(x-80,0,160,worldH)){
-  rect(x-80,0,160,worldH,'#9a9b80');rect(x-68,0,136,worldH,'#555f53');rect(x-64,0,128,worldH,'#343d38');
-  rect(x-48,0,1,worldH,'#626b5a');rect(x+47,0,1,worldH,'#626b5a');
+ const roads=CITY_ROADS.filter(road=>{const xs=road.points.map(p=>p[0]),ys=road.points.map(p=>p[1]);return visible(Math.min(...xs)-90,Math.min(...ys)-90,Math.max(...xs)-Math.min(...xs)+180,Math.max(...ys)-Math.min(...ys)+180)});
+ // Paint every curb before any asphalt so junctions have continuous pavement.
+ for(let layer=0;layer<3;layer++)for(const road of roads){
+  const airside=road.kind==='taxiway'||road.kind==='apron',dirt=road.kind==='dirt';
+  const color=airside?(road.kind==='taxiway'?'#89927e':'#7f8d7c'):dirt?['#776f50','#9a8862','#ab956c'][layer]:['#92977d','#5b695a','#35413a'][layer];
+  cityRoadStroke(ctx,road,color,airside?0:dirt?[14,6,0][layer]:[30,8,0][layer]);
  }
- for(const y of CITY_Y)if(visible(0,y-80,worldW,160)){
-  rect(0,y-80,worldW,160,'#9a9b80');rect(0,y-68,worldW,136,'#555f53');rect(0,y-64,worldW,128,'#343d38');
-  rect(0,y-48,worldW,1,'#626b5a');rect(0,y+47,worldW,1,'#626b5a');
+ for(const road of roads)if(road.kind==='taxiway')cityRoadStroke(ctx,road,'#cfb76a',2-road.width);
+ for(const road of roads)if(!['bridge','taxiway','apron','dirt'].includes(road.kind))for(const p of cityRoadSamples(road)){
+  if(!visible(p.x,p.y,24,24)||cityJunctionAt(p.x,p.y,p.dx,p.dy,road))continue;
+  cityPixelLine(p.x,p.y,p.x+p.dx*21,p.y+p.dy*21,2,'#b7ac72');
  }
- for(const x of CITY_X)if(visible(x-80,0,160,worldH))for(let y=Math.floor(camera.y/48)*48;y<camera.y+H+48;y+=48)
-  if(!CITY_Y.some(c=>Math.abs(c-y)<92))rect(x-1,y,2,22,'#b9aa70');
- for(const y of CITY_Y)if(visible(0,y-80,worldW,160))for(let x=Math.floor(camera.x/48)*48;x<camera.x+W+48;x+=48)
-  if(!CITY_X.some(c=>Math.abs(c-x)<92))rect(x,y-1,22,2,'#b9aa70');
- for(const x of CITY_X)for(const y of CITY_Y)if(visible(x-90,y-90,180,180)){
-  rect(x-68,y-68,136,136,'#343d38');
+ for(const x of CITY_X)for(const y of CITY_Y)if(cityOldIntersection(x,y)&&visible(x-90,y-90,180,180)){
+  rect(x-64,y-64,128,128,'#35413a');
   for(let i=0;i<7;i++)for(const side of [-1,1]){
    rect(x-43+i*13,y+side*78-6,7,12,'#b3b296');rect(x+side*78-6,y-43+i*13,12,7,'#b3b296');
   }
-  for(const [sx,sy] of [[-1,-1],[1,1]]){
-   rect(x+sx*74-2,y+sy*91,4,18,'#29392b');rect(x+sx*74-4,y+sy*91-1,8,12,'#222c24');rect(x+sx*74-2,y+sy*91+2,4,3,'#b7d679');
-  }
  }
+ drawCityBridges();
+ drawSiteSurfaceDetails();
  // Small gutters, worn asphalt, and the outside perimeter remain fixed in world space.
  for(let gy=Math.floor(camera.y/48);gy<=(camera.y+H)/48;gy++)for(let gx=Math.floor(camera.x/48);gx<=(camera.x+W)/48;gx++){
   const h=(gx*97+gy*61)>>>0;rect(gx*48+h%31,gy*48+(h*13)%37,3,1,'#a3a38533');
@@ -90,6 +92,7 @@ function cityGround(){
  rect(0,0,worldW,16,'#283b2a');rect(0,worldH-16,worldW,16,'#283b2a');rect(0,0,16,worldH,'#283b2a');rect(worldW-16,0,16,worldH,'#283b2a');
 }
 function drawBuilding(o){
+ if(drawLandmarkBuilding(o))return;
  const {x,y,w,h,kind,index}=o;
  const roof=['#797d65','#8b7057','#677777','#927f68'][(index||0)%4];
  rect(x+8,y+10,w,h,'#18251f66');rect(x,y,w,h,'#323f36');rect(x,y,w,5,'#c0b28a');
